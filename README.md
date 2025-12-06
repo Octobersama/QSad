@@ -1,10 +1,5 @@
 <div align="center">
-    <h1> QFun </h1>
-
-![Downloads](https://img.shields.io/github/downloads/Xposed-Modules-Repo/me.yxp.qfun/total)
-![GitHub Stars](https://img.shields.io/github/stars/oneQAQone/QFun?style=social)
-[![Telegram Group](https://img.shields.io/badge/Telegram-Join_Group-2CA5E0?logo=telegram)](https://t.me/QFunChatGroup)
-[![Telegram](https://img.shields.io/static/v1?label=Telegram&message=Channel&color=0088cc)](https://t.me/QFunChannel)
+    <h1> QSad </h1>
 </div>
 
 # 简介
