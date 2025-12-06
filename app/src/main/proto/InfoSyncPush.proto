@@ -1,6 +1,6 @@
 syntax = "proto3";
-package me.yxp.qfun.proto;
-option java_package = "me.yxp.qfun.proto";
+package sama.october.QSad.proto;
+option java_package = "sama.october.QSad.proto";
 
 import "QQMessage.proto";
 
