@@ -8,6 +8,11 @@
         android:resizeableActivity="true"
         android:theme="@style/AppTheme">
 
+        <activity
+            android:name="sama.october.QSad.activity.InjectSettings"
+            android:exported="false"
+            android:theme="@style/Theme_QSad_Compose" />
+
 
         <meta-data
             android:name="xposedmodule"

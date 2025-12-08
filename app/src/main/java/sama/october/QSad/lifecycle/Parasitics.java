@@ -310,7 +310,7 @@ public class Parasitics {
                                     proxyInfo.applicationInfo = info.applicationInfo;
                                     fInfo.set(activityClientRecord, proxyInfo);
                                 } else {
-                                    info.theme = R.style.AppTheme;
+                                    info.theme = R.style.Theme_QSad_Compose;
                                     fInfo.set(activityClientRecord, info);
                                 }
                             }
@@ -372,21 +372,21 @@ public class Parasitics {
                             fInfo = c.getDeclaredField("mActivityInfo");
                         }
                         fInfo.setAccessible(true);
-                        ActivityInfo info = (ActivityInfo) fInfo.get(item);
-                        if (info != null && realIntent.getComponent() != null
-                                && InjectActivityNames.contains(realIntent.getComponent().getClassName())) {
-                            ActivityInfo proxyInfo = CounterfeitActivityInfoFactory
-                                    .makeProxyActivityInfo(realIntent.getComponent().getClassName(), info.flags);
-                            if (proxyInfo != null) {
-                                proxyInfo.applicationInfo = info.applicationInfo;
-                                fInfo.set(item, proxyInfo);
-                            } else {
-                                info.theme = R.style.AppTheme;
-                                fInfo.set(item, info);
+                                ActivityInfo info = (ActivityInfo) fInfo.get(item);
+                                if (info != null && realIntent.getComponent() != null
+                                        && InjectActivityNames.contains(realIntent.getComponent().getClassName())) {
+                                    ActivityInfo proxyInfo = CounterfeitActivityInfoFactory
+                                            .makeProxyActivityInfo(realIntent.getComponent().getClassName(), info.flags);
+                                    if (proxyInfo != null) {
+                                        proxyInfo.applicationInfo = info.applicationInfo;
+                                        fInfo.set(item, proxyInfo);
+                                    } else {
+                                        info.theme = R.style.Theme_QSad_Compose;
+                                        fInfo.set(item, info);
+                                    }
+                                }
+                            } catch (Exception ignored) {
                             }
-                        }
-                    } catch (Exception ignored) {
-                    }
                     if (Build.VERSION.SDK_INT >= 31) {
                         IBinder token = (IBinder) clientTransaction.getClass().getMethod("getActivityToken")
                                 .invoke(clientTransaction);
