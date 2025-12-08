@@ -47,6 +47,7 @@ import sama.october.QSad.hook.purify.RemoveEmoReplyHook;
 import sama.october.QSad.hook.purify.RemoveFilterVideoHook;
 import sama.october.QSad.hook.qrcode.LiftQRCodeLimitHook;
 import sama.october.QSad.hook.qrcode.SkipWaitTimeHook;
+import sama.october.QSad.hook.redpacket.RedPacketHook;
 import sama.october.QSad.hook.social.AutoKeepSparkHook;
 import sama.october.QSad.hook.social.OneClickLikeHook;
 import sama.october.QSad.hook.social.PaiYiPaiHook;
@@ -124,7 +125,8 @@ public class MainHook {
                 AutoSendOriginalPicHook.class, RecordsReplyMsgHook.class,
                 ForwardPttHook.class, DownloadTimesHook.class, CustomDeviceHook.class,
                 AntiInteractivePopHook.class, RemoveFilterVideoHook.class, AntiLinkPreviewHook.class,
-                MultiRecallHook.class, RemoveEmoReplyHook.class, ShowAtTargetHook.class
+                MultiRecallHook.class, RemoveEmoReplyHook.class, ShowAtTargetHook.class,
+                RedPacketHook.class
         };
 
         for (Class<?> hookClass : hookClasses) {

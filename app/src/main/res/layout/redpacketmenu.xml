@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- 自动抢红包开关 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="8dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="自动抢红包"
+            android:textSize="16sp" />
+        <Switch
+            android:id="@+id/autoSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <!-- 手动抢红包开关 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="8dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="手动抢红包（长按菜单）"
+            android:textSize="16sp" />
+        <Switch
+            android:id="@+id/manualSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <!-- 激进模式开关 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="8dp"
+        android:background="#FFFFE0">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="⚡激进模式（牺牲性能换速度）"
+            android:textSize="16sp"
+            android:textColor="@android:color/holo_red_dark"
+            android:textStyle="bold" />
+        <Switch
+            android:id="@+id/aggressiveSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="激进模式：跳过检查、并行抢包、禁用无关服务"
+        android:textSize="12sp"
+        android:textColor="@android:color/darker_gray"
+        android:paddingBottom="8dp" />
+
+    <!-- 白名单群组按钮 -->
+    <LinearLayout
+        android:id="@+id/whitelistGroupButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="12dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="白名单群组设置"
+            android:textSize="16sp"
+            android:textColor="@android:color/holo_blue_dark" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=">"
+            android:textSize="18sp"
+            android:textColor="@android:color/darker_gray" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginVertical="8dp" />
+
+    <!-- 平均金额过滤 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="8dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="平均金额过滤（分）"
+            android:textSize="14sp" />
+        <Switch
+            android:id="@+id/averageSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/averageEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="低于此金额不抢（单位：分）"
+        android:inputType="number"
+        android:paddingVertical="8dp" />
+
+    <!-- 延迟抢红包 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="8dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="延迟抢红包（毫秒）"
+            android:textSize="14sp" />
+        <Switch
+            android:id="@+id/delaySwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/delayEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="延迟时间（单位：毫秒）"
+        android:inputType="number"
+        android:paddingVertical="8dp" />
+
+    <!-- 关键词过滤 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="8dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="关键词过滤"
+            android:textSize="14sp" />
+        <Switch
+            android:id="@+id/keywordSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/keywordEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="包含这些关键词不抢，逗号分隔"
+        android:inputType="text"
+        android:paddingVertical="8dp" />
+
+    <!-- 自动回复 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="8dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="抢到后自动回复"
+            android:textSize="14sp" />
+        <Switch
+            android:id="@+id/replySwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/replyEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="回复内容，多条用逗号分隔随机发送"
+        android:inputType="text"
+        android:paddingVertical="8dp" />
+
+</LinearLayout>

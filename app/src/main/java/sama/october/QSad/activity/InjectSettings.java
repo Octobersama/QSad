@@ -49,6 +49,8 @@ public class InjectSettings extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 直接使用模块主题，避免受宿主主题影响
+        setTheme(R.style.AppTheme);
         setContentView(R.layout.injectsettings);
 
         setTranslucentStatus(this);
@@ -110,9 +112,9 @@ public class InjectSettings extends Activity {
     private void handleImagePick(Intent data) {
         try {
             RepeatMsgHook.sBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
-            ToastUtils.QQToast(2, "加一图标导入成功！");
+            ToastUtils.QQToast(2, "加一图标导入成功");
         } catch (Exception ignored) {
-            ToastUtils.QQToast(1, "加一图标导入失败！");
+            ToastUtils.QQToast(1, "加一图标导入失败");
         }
     }
 

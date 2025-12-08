@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
+import sama.october.QSad.R;
 import sama.october.QSad.utils.qq.HostInfo;
 
 public class CounterfeitActivityInfoFactory {
@@ -22,7 +23,8 @@ public class CounterfeitActivityInfoFactory {
 
                     ActivityInfo proto = ctx.getPackageManager()
                             .getActivityInfo(new ComponentName(ctx.getPackageName(), activityName), (int) flags);
-
+                    // ä¸ºä»°é€ActivityæŒ‡å®šæ¨¡å—è‡ªå·±çš„AppCompatä¸»é¢˜ï¼Œé¿å…ä½¿ç”¨å®¿ä¸»é�žAppCompatä¸»é¢˜å¯¼è‡´çªç„¶æš´å¼¹
+                    proto.theme = R.style.AppTheme;
                     return initCommon(proto, className);
                 } catch (PackageManager.NameNotFoundException e) {
                     last = e;
@@ -46,4 +48,3 @@ public class CounterfeitActivityInfoFactory {
         return ai;
     }
 }
-

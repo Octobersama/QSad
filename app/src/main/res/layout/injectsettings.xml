@@ -1,86 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:background="@drawable/image_1">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-	<LinearLayout
-		android:orientation="horizontal"
-		android:layout_width="match_parent"
-		android:layout_height="50dp"
-		android:gravity="center"
-		android:layout_marginBottom="20dp"
-		android:layout_margin="40dp">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:layout_marginBottom="20dp"
+        android:layout_margin="24dp">
 
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="设置"
-			android:textColor="#F2FF1E"
-			android:textSize="35sp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="设置"
+            android:textColor="#000000"
+            android:textSize="28sp"/>
 
-	</LinearLayout>
+    </LinearLayout>
 
-	<LinearLayout
-		android:orientation="vertical"
-		android:layout_width="match_parent"
-		android:layout_height="80dp"
-		android:background="@drawable/round"
-		android:layout_marginBottom="40dp">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:padding="12dp">
 
-		<LinearLayout
-			android:orientation="horizontal"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_weight="1.0"
-			android:gravity="center_vertical"
-			android:onClick="startImportConfig">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:onClick="startImportConfig"
+            android:padding="12dp">
 
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="导入配置"
-				android:padding="10dp"
-				android:textColor="#000000"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="导入配置"
+                android:textColor="#000000"/>
 
-		</LinearLayout>
+        </LinearLayout>
 
-		<LinearLayout
-			android:orientation="horizontal"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_weight="1.0"
-			android:gravity="center_vertical">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#dddddd"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
 
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="导出配置（包含日志，反馈时可导出并发送给开发者）"
-				android:padding="10dp"
-				android:textColor="#000000"
-				android:onClick="startExportConfig"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:padding="12dp"
+            android:onClick="startExportConfig">
 
-		</LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="导出配置（包含日志）"
+                android:textColor="#000000"/>
 
-	</LinearLayout>
+        </LinearLayout>
 
-	<LinearLayout
-		android:orientation="vertical"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="50dp">
+    </LinearLayout>
 
-		<ListView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:id="@+id/hookListView"
-			android:background="@drawable/round"
-			android:scrollbars="none"
-			android:divider="@null"/>
-
-	</LinearLayout>
+    <ListView
+        android:id="@+id/hookListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@null"
+        android:padding="8dp"/>
 
 </LinearLayout>
-

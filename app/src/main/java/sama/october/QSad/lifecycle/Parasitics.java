@@ -292,6 +292,30 @@ public class Parasitics {
                     if (cloneIntent.hasExtra(ACTIVITY_PROXY_INTENT)) {
                         Intent realIntent = cloneIntent.getParcelableExtra(ACTIVITY_PROXY_INTENT);
                         field_intent.set(activityClientRecord, realIntent);
+                        // ä¿®æ­£ActivityInfoä¸»é¢˜ï¼Œé¿å…ä½¿ç”¨å®¿ä¸»é�žAppCompatä¸»é¢˜
+                        try {
+                            Field fInfo;
+                            try {
+                                fInfo = activityClientRecord.getClass().getDeclaredField("activityInfo");
+                            } catch (NoSuchFieldException ignore) {
+                                fInfo = activityClientRecord.getClass().getDeclaredField("info");
+                            }
+                            fInfo.setAccessible(true);
+                            ActivityInfo info = (ActivityInfo) fInfo.get(activityClientRecord);
+                            if (info != null && realIntent.getComponent() != null
+                                    && InjectActivityNames.contains(realIntent.getComponent().getClassName())) {
+                                ActivityInfo proxyInfo = CounterfeitActivityInfoFactory
+                                        .makeProxyActivityInfo(realIntent.getComponent().getClassName(), info.flags);
+                                if (proxyInfo != null) {
+                                    proxyInfo.applicationInfo = info.applicationInfo;
+                                    fInfo.set(activityClientRecord, proxyInfo);
+                                } else {
+                                    info.theme = R.style.AppTheme;
+                                    fInfo.set(activityClientRecord, info);
+                                }
+                            }
+                        } catch (Exception ignored) {
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -339,6 +363,30 @@ public class Parasitics {
                 if (cloneIntent.hasExtra(ACTIVITY_PROXY_INTENT)) {
                     Intent realIntent = cloneIntent.getParcelableExtra(ACTIVITY_PROXY_INTENT);
                     fmIntent.set(item, realIntent);
+                    // ä¿®æ­£ActivityInfoä¸»é¢˜ï¼Œé¿å…ä½¿ç”¨å®¿ä¸»é¢˜å¯¼è‡´AppCompatæ ¸æŸ¥å¤±è´¥
+                    try {
+                        Field fInfo;
+                        try {
+                            fInfo = c.getDeclaredField("mInfo");
+                        } catch (NoSuchFieldException ignore) {
+                            fInfo = c.getDeclaredField("mActivityInfo");
+                        }
+                        fInfo.setAccessible(true);
+                        ActivityInfo info = (ActivityInfo) fInfo.get(item);
+                        if (info != null && realIntent.getComponent() != null
+                                && InjectActivityNames.contains(realIntent.getComponent().getClassName())) {
+                            ActivityInfo proxyInfo = CounterfeitActivityInfoFactory
+                                    .makeProxyActivityInfo(realIntent.getComponent().getClassName(), info.flags);
+                            if (proxyInfo != null) {
+                                proxyInfo.applicationInfo = info.applicationInfo;
+                                fInfo.set(item, proxyInfo);
+                            } else {
+                                info.theme = R.style.AppTheme;
+                                fInfo.set(item, info);
+                            }
+                        }
+                    } catch (Exception ignored) {
+                    }
                     if (Build.VERSION.SDK_INT >= 31) {
                         IBinder token = (IBinder) clientTransaction.getClass().getMethod("getActivityToken")
                                 .invoke(clientTransaction);
@@ -447,4 +495,3 @@ public class Parasitics {
         }
     }
 }
-
