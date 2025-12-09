@@ -1,5 +1,15 @@
 package sama.october.QSad.hook.msg;
 
+import android.content.Context;
+import android.view.ContextThemeWrapper;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -10,14 +20,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.view.View;
 import sama.october.QSad.hook.api.OnSendMsg;
 import sama.october.QSad.hook.base.BaseWithDataHookItem;
 import sama.october.QSad.hook.base.HookItemAnnotation;
-import sama.october.QSad.ui.host.HostUIFactory;
 import sama.october.QSad.utils.data.DataUtils;
 import sama.october.QSad.utils.json.JsonUtil;
-import sama.october.QSad.utils.qq.QQCurrentEnv;
 import sama.october.QSad.utils.reflect.FieldUtils;
 import sama.october.QSad.utils.thread.SyncUtils;
 
@@ -83,11 +90,38 @@ public final class PicSummaryHook extends BaseWithDataHookItem {
 
     @Override
     public void onClick(View v) {
-        HostUIFactory.showPicSummaryConfig(QQCurrentEnv.getActivity(), dataMap, updated -> {
-            dataMap.clear();
-            dataMap.putAll(updated);
-            setNextPicSummary();
-        });
+        Context context = v.getContext();
+        LinearLayout linearLayout = new LinearLayout(context);
+        int padding = (int) (context.getResources().getDisplayMetrics().density * 16);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setPadding(padding, padding, padding, padding);
+
+        TextInputLayout keyLayout = new TextInputLayout(context);
+        keyLayout.setHint("需要显示的 key");
+        TextInputEditText keyText = new TextInputEditText(context);
+        keyText.setText(dataMap.get("key"));
+        keyLayout.addView(keyText);
+
+        TextInputLayout summaryLayout = new TextInputLayout(context);
+        summaryLayout.setHint("普通外显或 api 链接");
+        TextInputEditText summaryText = new TextInputEditText(context);
+        summaryText.setText(dataMap.get("summaryOrUrl"));
+        summaryLayout.addView(summaryText);
+
+        linearLayout.addView(keyLayout);
+        linearLayout.addView(summaryLayout);
+
+        Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
+        new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+                .setTitle("设置图片外显文本")
+                .setView(linearLayout)
+                .setPositiveButton("保存", (dialog, which) -> {
+                    dataMap.put("key", keyText.getText() == null ? "" : keyText.getText().toString());
+                    dataMap.put("summaryOrUrl", summaryText.getText() == null ? "" : summaryText.getText().toString());
+                    setNextPicSummary();
+                })
+                .create()
+                .show();
     }
 
     private void setNextPicSummary() {

@@ -1,7 +1,6 @@
 package sama.october.QSad.hook.troop;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,6 +29,7 @@ import sama.october.QSad.utils.qq.TroopTool;
 import sama.october.QSad.utils.reflect.ClassUtils;
 import sama.october.QSad.utils.reflect.FieldUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
+import androidx.appcompat.app.AlertDialog;
 
 @HookItemAnnotation(TAG = "简洁群管", desc = "点击群聊头像开启菜单，省去进入主页管理群员")
 public final class SimpleTroopManagement extends BaseSwitchHookItem {

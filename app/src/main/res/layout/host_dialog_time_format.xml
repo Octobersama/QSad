@@ -5,43 +5,39 @@
     android:orientation="vertical"
     android:padding="20dp">
 
-    <TextView
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="ARGB 颜色代码："
-        android:textColor="@color/host_text_primary" />
+        android:hint="ARGB 颜色代码">
 
-    <EditText
-        android:id="@+id/et_color"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:drawable/edit_text"
-        android:inputType="textCapCharacters"
-        android:maxLines="1"
-        android:padding="8dp" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_color"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapCharacters"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="时间格式："
-        android:textColor="@color/host_text_primary" />
+        android:hint="时间格式">
 
-    <EditText
-        android:id="@+id/et_format"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:drawable/edit_text"
-        android:inputType="text"
-        android:maxLines="1"
-        android:padding="8dp" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_format"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/tv_error"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:textColor="@android:color/holo_red_light"
+        android:textColor="?attr/colorError"
         android:visibility="gone" />
 
     <TextView
@@ -49,16 +45,16 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="预览效果"
-        android:textColor="@color/host_text_primary"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="?attr/colorOnSurfaceVariant" />
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:orientation="vertical"
         android:padding="12dp"
-        android:background="@android:color/darker_gray">
+        android:clickable="false"
+        android:focusable="false">
 
         <TextView
             android:id="@+id/tv_preview"
@@ -66,9 +62,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="8dp"
-            android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
-    </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>
