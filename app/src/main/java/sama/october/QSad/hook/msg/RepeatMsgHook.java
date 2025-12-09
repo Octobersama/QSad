@@ -16,7 +16,7 @@ import java.util.List;
 
 import kotlin.Lazy;
 import sama.october.QSad.R;
-import sama.october.QSad.activity.InjectSettings;
+import sama.october.QSad.ui.module.InjectSettings;
 import sama.october.QSad.hook.base.BaseWithDataHookItem;
 import sama.october.QSad.hook.base.HookItemAnnotation;
 import sama.october.QSad.javaplugin.api.MsgData;

@@ -148,7 +148,7 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
         public TimeFormatDialog(Context context) {
             Context dialogContext = new ContextThemeWrapper(context, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
             LayoutInflater inflater = LayoutInflater.from(dialogContext);
-            View dialogView = inflater.inflate(R.layout.dialog_time_format, null);
+            View dialogView = inflater.inflate(R.layout.host_dialog_time_format, null);
 
             mColorInput = dialogView.findViewById(R.id.et_color);
             mFormatInput = dialogView.findViewById(R.id.et_format);

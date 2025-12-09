@@ -9,14 +9,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="天"
-        android:textColor="?android:textColorPrimary"
+        android:textColor="@color/host_text_primary"
         android:textSize="14sp" />
 
     <EditText
         android:id="@+id/etDays"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:drawable/edit_text"
         android:inputType="number"
+        android:padding="8dp"
         android:text="0" />
 
     <TextView
@@ -24,14 +26,16 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="小时"
-        android:textColor="?android:textColorPrimary"
+        android:textColor="@color/host_text_primary"
         android:textSize="14sp" />
 
     <EditText
         android:id="@+id/etHours"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:drawable/edit_text"
         android:inputType="number"
+        android:padding="8dp"
         android:text="0" />
 
     <TextView
@@ -39,14 +43,16 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="分钟"
-        android:textColor="?android:textColorPrimary"
+        android:textColor="@color/host_text_primary"
         android:textSize="14sp" />
 
     <EditText
         android:id="@+id/etMinutes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:drawable/edit_text"
         android:inputType="number"
+        android:padding="8dp"
         android:text="0" />
 
     <TextView
@@ -54,14 +60,16 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="秒"
-        android:textColor="?android:textColorPrimary"
+        android:textColor="@color/host_text_primary"
         android:textSize="14sp" />
 
     <EditText
         android:id="@+id/etSeconds"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:drawable/edit_text"
         android:inputType="number"
+        android:padding="8dp"
         android:text="0" />
 
 </LinearLayout>

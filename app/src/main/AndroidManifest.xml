@@ -9,7 +9,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name="sama.october.QSad.activity.InjectSettings"
+            android:name="sama.october.QSad.ui.module.InjectSettings"
             android:exported="false"
             android:theme="@style/Theme_QSad_Compose" />
 

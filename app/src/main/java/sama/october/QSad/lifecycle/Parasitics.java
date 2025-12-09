@@ -64,7 +64,7 @@ public class Parasitics {
     private static final String ACTIVITY_PROXY_INTENT = "ACTIVITY_PROXY_INTENT";
 
     private static final List<String> InjectActivityNames = Arrays
-            .asList("sama.october.QSad.activity.InjectSettings", "sama.october.QSad.activity.JavaPlugin");
+            .asList("sama.october.QSad.ui.module.InjectSettings", "sama.october.QSad.activity.JavaPlugin");
 
     private static final ClassLoader moduleloader = ClassUtils.getModuleClassLoader();
 

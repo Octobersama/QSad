@@ -8,7 +8,7 @@ import java.lang.reflect.Proxy;
 import java.util.List;
 
 import sama.october.QSad.R;
-import sama.october.QSad.activity.InjectSettings;
+import sama.october.QSad.ui.module.InjectSettings;
 import sama.october.QSad.activity.JavaPlugin;
 import sama.october.QSad.utils.hook.HookUtils;
 import sama.october.QSad.utils.qq.QQCurrentEnv;

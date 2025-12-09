@@ -20,7 +20,7 @@ import sama.october.QSad.utils.qq.EnableInfo;
 import sama.october.QSad.utils.reflect.ClassUtils;
 import sama.october.QSad.utils.reflect.FieldUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
-import sama.october.QSad.utils.ui.EnableDialog;
+import sama.october.QSad.ui.host.dialog.EnableDialog;
 
 @HookItemAnnotation(TAG = "屏蔽艾特全体消息", desc = "屏蔽艾特全体和群待办，点击可选择不需要屏蔽的群聊")
 public final class AntiAtAllHook extends BaseWithDataHookItem {

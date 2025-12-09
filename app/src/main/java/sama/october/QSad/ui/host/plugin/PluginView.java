@@ -1,4 +1,4 @@
-package sama.october.QSad.javaplugin.view;
+package sama.october.QSad.ui.host.plugin;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -84,7 +84,7 @@ public class PluginView {
     }
 
     private void createPopupWindow(Activity activity) {
-        View popupView = LayoutInflater.from(activity).inflate(R.layout.pluginfloatview, null);
+        View popupView = LayoutInflater.from(activity).inflate(R.layout.host_plugin_float_button, null);
         mFloatingButton = popupView.findViewById(R.id.float_btn);
 
         mPopupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -175,7 +175,7 @@ public class PluginView {
         if (activity == null) return;
 
         View root = activity.findViewById(android.R.id.content);
-        LinearLayout menu = (LinearLayout) LayoutInflater.from(activity).inflate(R.layout.pluginpopupview, null);
+        LinearLayout menu = (LinearLayout) LayoutInflater.from(activity).inflate(R.layout.host_plugin_menu_popup, null);
         LinearLayout pluginItemHolder = menu.findViewById(R.id.pluginitemholder);
 
         for (PluginInfo pluginInfo : PluginManager.pluginInfos) {
@@ -194,7 +194,7 @@ public class PluginView {
         Map<String, String> itemMap = pluginInfo.pluginCompiler.itemMap;
         if (itemMap.isEmpty()) return;
 
-        LinearLayout menuItem = (LinearLayout) LayoutInflater.from(activity).inflate(R.layout.pluginmenu, null);
+        LinearLayout menuItem = (LinearLayout) LayoutInflater.from(activity).inflate(R.layout.host_plugin_menu, null);
         TextView pluginNameTextView = menuItem.findViewById(R.id.pluginNameTextView);
         pluginNameTextView.setText(pluginInfo.pluginName);
 
@@ -222,7 +222,7 @@ public class PluginView {
     private void addMenuItemToPlugin(Activity activity, PluginInfo pluginInfo,
                                      LinearLayout menuItem, String name, String callback) {
         LinearLayout pluginMenuItem = (LinearLayout) LayoutInflater.from(activity)
-                .inflate(R.layout.pluginmenuitem, null);
+                .inflate(R.layout.host_plugin_menu_item, null);
         TextView menuItemButton = pluginMenuItem.findViewById(R.id.pluginmenuitemButton);
         menuItemButton.setText(name);
 

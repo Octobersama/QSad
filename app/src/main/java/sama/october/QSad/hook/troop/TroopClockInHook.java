@@ -17,7 +17,7 @@ import sama.october.QSad.utils.reflect.ClassUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
 import sama.october.QSad.utils.thread.LoopHolder;
 import sama.october.QSad.utils.thread.SyncUtils;
-import sama.october.QSad.utils.ui.EnableDialog;
+import sama.october.QSad.ui.host.dialog.EnableDialog;
 
 @HookItemAnnotation(TAG = "群打卡", desc = "点击选择你要打卡的群聊", TargetProcess = "All")
 public final class TroopClockInHook extends BaseWithDataHookItem {

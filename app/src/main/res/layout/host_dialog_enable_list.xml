@@ -13,28 +13,25 @@
         android:layout_marginBottom="12dp"
         android:gravity="center"
         android:padding="12dp"
-        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textColor="@color/host_text_secondary"
         android:textSize="16sp"
         android:textStyle="bold" />
 
-    <com.google.android.material.textfield.TextInputLayout
+    <EditText
+        android:id="@+id/et_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
-        android:hint="输入搜索内容">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_search"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text" />
-    </com.google.android.material.textfield.TextInputLayout>
+        android:background="@android:drawable/edit_text"
+        android:hint="输入搜索内容"
+        android:inputType="text"
+        android:padding="10dp" />
 
     <ListView
         android:id="@+id/lv_troops"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:divider="?attr/colorOutline"
+        android:divider="@color/host_divider"
         android:dividerHeight="0.5dp"
         android:scrollbars="none"
         android:paddingTop="4dp"

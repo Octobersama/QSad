@@ -67,7 +67,7 @@ public final class SimpleTroopManagement extends BaseSwitchHookItem {
 
             Context context = view.getContext();
             LinearLayout managementLayout = (LinearLayout) LayoutInflater.from(context)
-                    .inflate(R.layout.troopmanagement_simple, null);
+                    .inflate(R.layout.host_troop_management_panel, null);
             View anchorView = ((Activity) context).getWindow().getDecorView();
             PopupWindow popupWindow = new PopupWindow(managementLayout,
                     ViewGroup.LayoutParams.MATCH_PARENT, anchorView.getHeight() / 2, true);
@@ -141,7 +141,7 @@ public final class SimpleTroopManagement extends BaseSwitchHookItem {
 
         parent.findViewById(R.id.troopmanagementButton5).setOnClickListener(v -> {
             LinearLayout shutUpLayout = (LinearLayout) LayoutInflater.from(dialogContext)
-                    .inflate(R.layout.shutuplayout, null);
+                    .inflate(R.layout.host_shutup_duration, null);
 
             final EditText etDays = shutUpLayout.findViewById(R.id.etDays);
             final EditText etHours = shutUpLayout.findViewById(R.id.etHours);

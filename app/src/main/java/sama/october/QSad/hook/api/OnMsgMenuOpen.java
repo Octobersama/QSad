@@ -119,7 +119,7 @@ public final class OnMsgMenuOpen extends ApiHookItem {
     private View createMenuItemView(String menuKey, Object msgRecord) {
         Activity activity = QQCurrentEnv.getActivity();
         LinearLayout itemLayout = (LinearLayout) LayoutInflater.from(activity)
-                .inflate(R.layout.msgmenuitem, null);
+                .inflate(R.layout.host_msg_menu_item, null);
         TextView msgmenuitemTextView = itemLayout.findViewById(R.id.msgmenuitemTextView);
 
         String name = menuKey.split(",")[2];

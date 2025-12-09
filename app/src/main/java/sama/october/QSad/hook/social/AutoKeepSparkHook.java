@@ -5,10 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.view.ContextThemeWrapper;
 
 import sama.october.QSad.R;
 import sama.october.QSad.hook.base.BaseWithDataHookItem;
@@ -18,9 +17,8 @@ import sama.october.QSad.utils.data.DataUtils;
 import sama.october.QSad.utils.qq.EnableInfo;
 import sama.october.QSad.utils.qq.MsgTool;
 import sama.october.QSad.utils.thread.LoopHolder;
-import sama.october.QSad.utils.ui.EnableDialog;
-import androidx.appcompat.app.AlertDialog;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import sama.october.QSad.ui.host.dialog.EnableDialog;
+import android.app.AlertDialog;
 
 @HookItemAnnotation(TAG = "自动续火", desc = "点击选择聊天和设置消息，支持图文消息（见脚本开发文档）")
 public final class AutoKeepSparkHook extends BaseWithDataHookItem {
@@ -99,15 +97,14 @@ public final class AutoKeepSparkHook extends BaseWithDataHookItem {
 
         mTroopEnableInfo.updateInfo();
         mFriendEnableInfo.updateInfo();
-        LinearLayout parent = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.keepsparkview, null);
+        LinearLayout parent = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.host_keep_spark, null);
         EditText msgEditText = parent.findViewById(R.id.keepspark_msg);
         msgEditText.setText(msg);
-        TextView troopButton = parent.findViewById(R.id.keepspark_troop);
-        TextView friendButton = parent.findViewById(R.id.keepspark_friend);
+        Button troopButton = parent.findViewById(R.id.keepspark_troop);
+        Button friendButton = parent.findViewById(R.id.keepspark_friend);
         troopButton.setOnClickListener(view -> new EnableDialog(context, mTroopEnableInfo).show());
         friendButton.setOnClickListener(view -> new EnableDialog(context, mFriendEnableInfo).show());
-        Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
-        new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+        new AlertDialog.Builder(context)
                 .setTitle("续火设置")
                 .setView(parent)
                 .setOnCancelListener(view -> msg = msgEditText.getText().toString())

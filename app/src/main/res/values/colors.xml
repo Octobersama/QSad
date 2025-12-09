@@ -20,4 +20,10 @@
     <!-- 错误色 -->
     <color name="md_theme_error">#B00020</color>
     <color name="md_theme_on_error">#FFFFFF</color>
+
+    <!-- 宿主侧轻量配色 -->
+    <color name="host_accent">#1976D2</color>
+    <color name="host_text_primary">#111111</color>
+    <color name="host_text_secondary">#666666</color>
+    <color name="host_divider">#33000000</color>
 </resources>
