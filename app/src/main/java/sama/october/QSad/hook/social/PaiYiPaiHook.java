@@ -1,10 +1,12 @@
 package sama.october.QSad.hook.social;
 
 import android.app.Activity;
+import android.content.Context;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.widget.EditText;
+import android.view.ContextThemeWrapper;
 
 import java.lang.reflect.Method;
 
@@ -66,7 +68,8 @@ public final class PaiYiPaiHook extends BaseSwitchHookItem {
         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
         editText.addTextChangedListener(createTextWatcher(editText));
 
-        new MaterialAlertDialogBuilder(activity, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+        Context themed = new ContextThemeWrapper(activity, sama.october.QSad.R.style.Theme_QSad_Compose);
+        new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                 .setTitle("请输入次数")
                 .setView(editText)
                 .setPositiveButton("确定", (dialogInterface, which) -> {

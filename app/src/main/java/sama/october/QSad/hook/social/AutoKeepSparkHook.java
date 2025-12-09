@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.view.ContextThemeWrapper;
 
 import sama.october.QSad.R;
 import sama.october.QSad.hook.base.BaseWithDataHookItem;
@@ -105,7 +106,8 @@ public final class AutoKeepSparkHook extends BaseWithDataHookItem {
         TextView friendButton = parent.findViewById(R.id.keepspark_friend);
         troopButton.setOnClickListener(view -> new EnableDialog(context, mTroopEnableInfo).show());
         friendButton.setOnClickListener(view -> new EnableDialog(context, mFriendEnableInfo).show());
-        new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+        Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
+        new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                 .setTitle("续火设置")
                 .setView(parent)
                 .setOnCancelListener(view -> msg = msgEditText.getText().toString())

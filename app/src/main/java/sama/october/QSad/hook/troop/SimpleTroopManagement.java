@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.view.ContextThemeWrapper;
 
 import java.lang.reflect.Method;
 
@@ -148,7 +149,8 @@ public final class SimpleTroopManagement extends BaseSwitchHookItem {
             final EditText etMinutes = shutUpLayout.findViewById(R.id.etMinutes);
             final EditText etSeconds = shutUpLayout.findViewById(R.id.etSeconds);
 
-            new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+            Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
+            new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                     .setView(shutUpLayout)
                     .setTitle("设置禁言时间")
                     .setPositiveButton("确定", (dialog, which) -> {
@@ -184,7 +186,8 @@ public final class SimpleTroopManagement extends BaseSwitchHookItem {
 
         parent.findViewById(R.id.troopmanagementButton7).setOnClickListener(v -> {
             final EditText editText = new EditText(context);
-            new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+            Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
+            new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                     .setTitle("设置头衔")
                     .setView(editText)
                     .setPositiveButton("确定", (dialog, which) -> {
@@ -201,7 +204,8 @@ public final class SimpleTroopManagement extends BaseSwitchHookItem {
         parent.findViewById(R.id.troopmanagementButton8).setOnClickListener(v -> {
             final EditText editText = new EditText(context);
             editText.setText(troopNick);
-            new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+            Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
+            new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                     .setTitle("设置群昵称")
                     .setView(editText)
                     .setNegativeButton("取消", null)

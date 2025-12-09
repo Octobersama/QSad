@@ -5,6 +5,7 @@ import android.view.Gravity;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.view.ContextThemeWrapper;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -116,7 +117,8 @@ public final class MsgContentHook extends BaseSwitchHookItem {
             container.addView(editText);
         }
 
-        new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+        Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
+        new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                 .setTitle("可修改文本")
                 .setView(container)
                 .setPositiveButton("确定", (dialog, which) -> {

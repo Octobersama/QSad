@@ -7,6 +7,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.view.ContextThemeWrapper;
+import android.widget.TextView;
 
 import org.json.JSONObject;
 
@@ -105,7 +107,8 @@ public final class PicSummaryHook extends BaseWithDataHookItem {
         linearLayout.addView(keyText);
         linearLayout.addView(summaryText);
 
-        new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+        Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
+        new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                 .setTitle("设置图片外显文本")
                 .setView(linearLayout)
                 .setPositiveButton("保存", (dialog, which) -> {

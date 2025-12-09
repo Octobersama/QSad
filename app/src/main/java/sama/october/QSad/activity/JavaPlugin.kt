@@ -29,6 +29,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.UploadFile
+import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.CloudDownload
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
@@ -281,6 +283,24 @@ private fun JavaPluginScreen(
                         Icon(Icons.Outlined.UploadFile, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("导入插件")
+                    }
+                    ElevatedButton(
+                        onClick = {},
+                        enabled = false,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Outlined.Folder, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("本地脚本（暂未开放）")
+                    }
+                    ElevatedButton(
+                        onClick = {},
+                        enabled = false,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Outlined.CloudDownload, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("在线脚本（暂未开放）")
                     }
                     ElevatedButton(
                         onClick = onOpenDocs,

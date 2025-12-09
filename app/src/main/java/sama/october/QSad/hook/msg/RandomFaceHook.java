@@ -142,7 +142,7 @@ public final class RandomFaceHook extends BaseSwitchHookItem {
             }
 
             SyncUtils.postDelayed(() ->
-                    new com.google.android.material.dialog.MaterialAlertDialogBuilder(QQCurrentEnv.getActivity(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+                    new com.google.android.material.dialog.MaterialAlertDialogBuilder(new android.view.ContextThemeWrapper(QQCurrentEnv.getActivity(), sama.october.QSad.R.style.Theme_QSad_Compose), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                             .setTitle(title)
                             .setSingleChoiceItems(values, -1, (dialog, which) -> {
                                 ToastUtils.QQToast(2, values[which]);

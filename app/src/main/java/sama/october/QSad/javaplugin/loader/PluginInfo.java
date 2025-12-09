@@ -18,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import android.view.ContextThemeWrapper;
 
 import sama.october.QSad.R;
 
@@ -108,7 +109,8 @@ public class PluginInfo implements OnClickListener {
 
         deleteButton.setOnClickListener(view -> {
             popupWindow.dismiss();
-            new MaterialAlertDialogBuilder(activity, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+            ContextThemeWrapper themed = new ContextThemeWrapper(activity, sama.october.QSad.R.style.Theme_QSad_Compose);
+            new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                     .setNegativeButton("取消", null)
                     .setTitle("提示")
                     .setMessage("确认删除该脚本？")

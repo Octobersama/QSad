@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.view.ContextThemeWrapper;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -162,7 +163,8 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
             mConfirmedColor = mCurrentColor;
             mConfirmedFormat = mCurrentFormat;
 
-            AlertDialog.Builder builder = new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+            Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
+            AlertDialog.Builder builder = new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                     .setTitle("时间格式设置")
                     .setView(dialogView)
                     .setPositiveButton("确认", null)
