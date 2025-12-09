@@ -10,7 +10,7 @@ import java.util.List;
 
 import kotlin.jvm.functions.Function0;
 import sama.october.QSad.R;
-import sama.october.QSad.ui.module.InjectSettings;
+import sama.october.QSad.activity.InjectSettings;
 import sama.october.QSad.activity.JavaPlugin;
 import sama.october.QSad.utils.dexkit.DexKit;
 import sama.october.QSad.utils.hook.HookUtils;

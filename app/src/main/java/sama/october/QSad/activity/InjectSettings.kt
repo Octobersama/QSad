@@ -1,4 +1,4 @@
-package sama.october.QSad.ui.module
+package sama.october.QSad.activity
 
 import android.content.Context
 import android.content.Intent
@@ -65,7 +65,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import sama.october.QSad.R
-import sama.october.QSad.activity.ModuleComponentActivity
 import sama.october.QSad.hook.MainHook
 import sama.october.QSad.hook.base.BaseSwitchHookItem
 import sama.october.QSad.hook.base.BaseWithDataHookItem

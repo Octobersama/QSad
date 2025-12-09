@@ -1,4 +1,4 @@
-package sama.october.QSad.ui.host.plugin;
+package sama.october.QSad.javaplugin.view;
 
 import java.lang.reflect.Method;
 

@@ -1,10 +1,10 @@
-package sama.october.QSad.ui.host.dialog;
+package sama.october.QSad.utils.ui;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +16,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.color.MaterialColors;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +29,7 @@ import sama.october.QSad.R;
 import sama.october.QSad.utils.qq.EnableInfo;
 
 /**
- * 宿主侧名单选择对话框，纯系统组件实现。
+ * 白名单选择弹窗，使用 Material3 样式。
  */
 public class EnableDialog {
     private final EnableInfo mEnableInfo;
@@ -51,8 +54,9 @@ public class EnableDialog {
     }
 
     private void initView() {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.host_dialog_enable_list, null);
-        mAlertDialog = new AlertDialog.Builder(mContext)
+        Context themed = new ContextThemeWrapper(mContext, sama.october.QSad.R.style.Theme_QSad_Compose);
+        View view = LayoutInflater.from(themed).inflate(R.layout.dialog_troop_enable, null);
+        mAlertDialog = new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                 .setTitle("选择" + mType)
                 .setView(view)
                 .create();
@@ -93,8 +97,8 @@ public class EnableDialog {
                 selectedCount++;
             }
         }
-        int selectedColor = ContextCompat.getColor(mContext, R.color.host_accent);
-        int unselectedColor = ContextCompat.getColor(mContext, R.color.host_text_secondary);
+        int selectedColor = MaterialColors.getColor(statusTextView, com.google.android.material.R.attr.colorPrimary);
+        int unselectedColor = MaterialColors.getColor(statusTextView, com.google.android.material.R.attr.colorOnSurfaceVariant);
 
         if (selectedCount == 0) {
             statusTextView.setText("未选择任何" + mType);
@@ -127,10 +131,10 @@ public class EnableDialog {
             String uin = getItem(position);
             boolean enable = mEnableInfo.dataList.getIsAvailable(uin);
 
-            int accent = ContextCompat.getColor(mContext, R.color.host_accent);
-            int normal = ContextCompat.getColor(mContext, R.color.host_text_primary);
+            int accent = MaterialColors.getColor(textView, com.google.android.material.R.attr.colorPrimary);
+            int normal = MaterialColors.getColor(textView, com.google.android.material.R.attr.colorOnSurface);
 
-            textView.setText(mEnableInfo.dataList.getValue(uin) + " - " + uin);
+            textView.setText(mEnableInfo.dataList.getValue(uin) + " · " + uin);
             textView.setTextColor(enable ? accent : normal);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
             int paddingH = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, textView.getResources().getDisplayMetrics());

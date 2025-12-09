@@ -1,7 +1,7 @@
 package sama.october.QSad.javaplugin;
 
 import sama.october.QSad.javaplugin.loader.PluginManager;
-import sama.october.QSad.ui.host.plugin.PluginViewLoader;
+import sama.october.QSad.javaplugin.view.PluginViewLoader;
 import sama.october.QSad.utils.error.ErrorOutput;
 
 public class MainPlugin {
@@ -24,3 +24,4 @@ public class MainPlugin {
     }
 
 }
+

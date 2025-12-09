@@ -1,4 +1,4 @@
-package sama.october.QSad.ui.host.plugin;
+package sama.october.QSad.javaplugin.view;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +17,9 @@ import android.widget.TextView;
 import java.util.Map;
 
 import bsh.EvalError;
+import sama.october.QSad.R;
 import sama.october.QSad.javaplugin.loader.PluginInfo;
 import sama.october.QSad.javaplugin.loader.PluginManager;
-import sama.october.QSad.ui.host.HostUIFactory;
 import sama.october.QSad.utils.error.PluginError;
 import sama.october.QSad.utils.qq.QQCurrentEnv;
 import sama.october.QSad.utils.reflect.ClassUtils;
@@ -83,20 +84,17 @@ public class PluginView {
     }
 
     private void createPopupWindow(Activity activity) {
-        HostUIFactory.PluginFloatButton floatButton = HostUIFactory.createPluginFloatButton(activity);
-        if (floatButton == null) {
-            return;
-        }
-        mFloatingButton = floatButton.buttonView;
+        View popupView = LayoutInflater.from(activity).inflate(R.layout.pluginfloatview, null);
+        mFloatingButton = popupView.findViewById(R.id.float_btn);
 
-        mPopupWindow = new PopupWindow(floatButton.rootView, ViewGroup.LayoutParams.WRAP_CONTENT,
+        mPopupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, false);
         mPopupWindow.setWidth(mButtonWidth);
         mPopupWindow.setHeight(mButtonHeight);
 
-        floatButton.rootView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        mButtonWidth = floatButton.rootView.getMeasuredWidth();
-        mButtonHeight = floatButton.rootView.getMeasuredHeight();
+        popupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        mButtonWidth = popupView.getMeasuredWidth();
+        mButtonHeight = popupView.getMeasuredHeight();
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -177,17 +175,14 @@ public class PluginView {
         if (activity == null) return;
 
         View root = activity.findViewById(android.R.id.content);
-        HostUIFactory.PluginMenuHolder menuHolder = HostUIFactory.createPluginMenu(activity);
-        if (menuHolder == null) {
-            return;
-        }
-        LinearLayout pluginItemHolder = menuHolder.itemHolder;
+        LinearLayout menu = (LinearLayout) LayoutInflater.from(activity).inflate(R.layout.pluginpopupview, null);
+        LinearLayout pluginItemHolder = menu.findViewById(R.id.pluginitemholder);
 
         for (PluginInfo pluginInfo : PluginManager.pluginInfos) {
             addPluginToMenu(activity, pluginInfo, pluginItemHolder);
         }
 
-        PopupWindow popupWindow = new PopupWindow(menuHolder.menuRoot, ViewGroup.LayoutParams.MATCH_PARENT,
+        PopupWindow popupWindow = new PopupWindow(menu, ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         popupWindow.setOutsideTouchable(true);
         popupWindow.setFocusable(true);
@@ -199,17 +194,14 @@ public class PluginView {
         Map<String, String> itemMap = pluginInfo.pluginCompiler.itemMap;
         if (itemMap.isEmpty()) return;
 
-        HostUIFactory.PluginMenuSection section = HostUIFactory.createPluginMenuSection(activity);
-        if (section == null) {
-            return;
-        }
-        TextView pluginNameTextView = section.titleView;
+        LinearLayout menuItem = (LinearLayout) LayoutInflater.from(activity).inflate(R.layout.pluginmenu, null);
+        TextView pluginNameTextView = menuItem.findViewById(R.id.pluginNameTextView);
         pluginNameTextView.setText(pluginInfo.pluginName);
 
         pluginNameTextView.setOnClickListener(v -> new Thread(() -> {
             try {
                 SyncUtils.runOnUiThread(() ->
-                        pluginNameTextView.setText(pluginInfo.pluginName + "(????...)"));
+                        pluginNameTextView.setText(pluginInfo.pluginName + "(加载中...)"));
 
                 pluginInfo.pluginCompiler.startPlugin();
             } catch (EvalError e) {
@@ -221,20 +213,23 @@ public class PluginView {
         }).start());
 
         for (Map.Entry<String, String> entry : itemMap.entrySet()) {
-            addMenuItemToPlugin(activity, pluginInfo, section.sectionRoot, entry.getKey(), entry.getValue());
+            addMenuItemToPlugin(activity, pluginInfo, menuItem, entry.getKey(), entry.getValue());
         }
 
-        pluginItemHolder.addView(section.sectionRoot);
+        pluginItemHolder.addView(menuItem);
     }
 
     private void addMenuItemToPlugin(Activity activity, PluginInfo pluginInfo,
                                      LinearLayout menuItem, String name, String callback) {
-        View pluginMenuItem = HostUIFactory.createPluginMenuItem(activity, name, v ->
-                pluginInfo.pluginCompiler.pluginCallback.invokeItem(callback, mChatType,
-                        mPeerUin, mPeerName, mContact));
-        if (pluginMenuItem != null) {
-            menuItem.addView(pluginMenuItem);
-        }
+        LinearLayout pluginMenuItem = (LinearLayout) LayoutInflater.from(activity)
+                .inflate(R.layout.pluginmenuitem, null);
+        TextView menuItemButton = pluginMenuItem.findViewById(R.id.pluginmenuitemButton);
+        menuItemButton.setText(name);
+
+        menuItemButton.setOnClickListener(v -> pluginInfo.pluginCompiler.pluginCallback.invokeItem(callback, mChatType,
+                mPeerUin, mPeerName, mContact));
+
+        menuItem.addView(pluginMenuItem);
     }
 
     public void showFloatingButton() {

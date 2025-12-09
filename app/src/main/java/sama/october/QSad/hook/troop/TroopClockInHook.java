@@ -9,7 +9,6 @@ import java.lang.reflect.Method;
 
 import sama.october.QSad.hook.base.BaseWithDataHookItem;
 import sama.october.QSad.hook.base.HookItemAnnotation;
-import sama.october.QSad.ui.host.HostUIFactory;
 import sama.october.QSad.utils.alarm.DailyAlarmHelper;
 import sama.october.QSad.utils.error.ErrorOutput;
 import sama.october.QSad.utils.qq.EnableInfo;
@@ -18,6 +17,7 @@ import sama.october.QSad.utils.reflect.ClassUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
 import sama.october.QSad.utils.thread.LoopHolder;
 import sama.october.QSad.utils.thread.SyncUtils;
+import sama.october.QSad.utils.ui.EnableDialog;
 
 @HookItemAnnotation(TAG = "群打卡", desc = "点击选择你要打卡的群聊", TargetProcess = "All")
 public final class TroopClockInHook extends BaseWithDataHookItem {
@@ -81,7 +81,7 @@ public final class TroopClockInHook extends BaseWithDataHookItem {
     public void onClick(View v) {
         Context context = v.getContext();
         mTroopEnableInfo.updateInfo();
-        HostUIFactory.showEnableSelection(context, mTroopEnableInfo);
+        new EnableDialog(context, mTroopEnableInfo).show();
 
     }
 

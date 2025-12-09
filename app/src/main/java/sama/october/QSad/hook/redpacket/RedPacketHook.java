@@ -1,12 +1,20 @@
 package sama.october.QSad.hook.redpacket;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.view.ContextThemeWrapper;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import android.view.View;
 import java.net.URLEncoder;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -21,7 +29,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import sama.october.QSad.R;
-import sama.october.QSad.ui.host.HostUIFactory;
 import sama.october.QSad.hook.api.OnMsg;
 import sama.october.QSad.hook.api.OnMsgMenuOpen;
 import sama.october.QSad.hook.base.BaseWithDataHookItem;
@@ -38,6 +45,8 @@ import sama.october.QSad.utils.reflect.ClassUtils;
 import sama.october.QSad.utils.reflect.FieldUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
 import sama.october.QSad.utils.thread.SyncUtils;
+import sama.october.QSad.utils.ui.EnableDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 @HookItemAnnotation(TAG = "自动抢红包", desc = "点击可设置一些参数")
 public final class RedPacketHook extends BaseWithDataHookItem {
@@ -144,7 +153,61 @@ public final class RedPacketHook extends BaseWithDataHookItem {
     @Override
     public void onClick(View view) {
         final Context context = view.getContext();
-        HostUIFactory.showRedPacketConfig(context, autoGrabHbConfig, commonHbConfig, mTroopEnableInfo);
+        this.mTroopEnableInfo.updateInfo();
+        Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
+        LinearLayout linearLayout = (LinearLayout) LayoutInflater.from(themed).inflate(R.layout.redpacketmenu, (ViewGroup) null);
+        MaterialButton whitelistGroupButton = linearLayout.findViewById(R.id.whitelistGroupButton);
+        final EditText averageEditText = linearLayout.findViewById(R.id.averageEditText);
+        final EditText keywordEditText = linearLayout.findViewById(R.id.keywordEditText);
+        final EditText replyEditText = linearLayout.findViewById(R.id.replyEditText);
+        final EditText delayEditText = linearLayout.findViewById(R.id.delayEditText);
+        final MaterialSwitch averageSwitch = linearLayout.findViewById(R.id.averageSwitch);
+        final MaterialSwitch keywordSwitch = linearLayout.findViewById(R.id.keywordSwitch);
+        final MaterialSwitch replySwitch = linearLayout.findViewById(R.id.replySwitch);
+        final MaterialSwitch delaySwitch = linearLayout.findViewById(R.id.delaySwitch);
+        final MaterialSwitch autoSwitch = linearLayout.findViewById(R.id.autoSwitch);
+        final MaterialSwitch manualSwitch = linearLayout.findViewById(R.id.manualSwitch);
+        final MaterialSwitch aggressiveSwitch = linearLayout.findViewById(R.id.aggressiveSwitch);
+
+        whitelistGroupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new EnableDialog(themed, mTroopEnableInfo).show();
+            }
+        });
+
+        averageSwitch.setChecked(this.autoGrabHbConfig.getIsAvailable("average"));
+        delaySwitch.setChecked(this.autoGrabHbConfig.getIsAvailable("delay"));
+        keywordSwitch.setChecked(this.autoGrabHbConfig.getIsAvailable("keywords"));
+        replySwitch.setChecked(this.autoGrabHbConfig.getIsAvailable("replys"));
+        autoSwitch.setChecked(this.commonHbConfig.get("isAuto").booleanValue());
+        manualSwitch.setChecked(this.commonHbConfig.get("isManual").booleanValue());
+        aggressiveSwitch.setChecked(this.commonHbConfig.get("isAggressive").booleanValue());
+        averageEditText.setText(this.autoGrabHbConfig.getValue("average").toString());
+        delayEditText.setText(this.autoGrabHbConfig.getValue("delay").toString());
+        keywordEditText.setText(listToCommaSeparatedString((List<String>) this.autoGrabHbConfig.getValue("keywords")));
+        replyEditText.setText(listToCommaSeparatedString((List<String>) this.autoGrabHbConfig.getValue("replys")));
+
+        new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog).setTitle("设置参数").setView(linearLayout).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String avgText = averageEditText.getText().toString();
+                String keywordText = keywordEditText.getText().toString();
+                String replyText = replyEditText.getText().toString();
+                String delayText = delayEditText.getText().toString();
+                autoGrabHbConfig.setValue("average", Integer.valueOf(avgText.isEmpty() ? 0 : Integer.parseInt(avgText)));
+                autoGrabHbConfig.setValue("delay", Long.valueOf(delayText.isEmpty() ? 0L : Long.parseLong(delayText)));
+                autoGrabHbConfig.setValue("keywords", splitStringToList(keywordText));
+                autoGrabHbConfig.setValue("replys", splitStringToList(replyText));
+                autoGrabHbConfig.setIsAvailable("average", averageSwitch.isChecked());
+                autoGrabHbConfig.setIsAvailable("delay", delaySwitch.isChecked());
+                autoGrabHbConfig.setIsAvailable("keywords", keywordSwitch.isChecked());
+                autoGrabHbConfig.setIsAvailable("replys", replySwitch.isChecked());
+                commonHbConfig.put("isAuto", autoSwitch.isChecked());
+                commonHbConfig.put("isManual", manualSwitch.isChecked());
+                commonHbConfig.put("isAggressive", aggressiveSwitch.isChecked());
+            }
+        }).show();
     }
 
     private void grabHb(MsgData msgData, boolean isAuto) throws SecurityException {
@@ -167,7 +230,7 @@ public final class RedPacketHook extends BaseWithDataHookItem {
                 return;
             }
 
-            // 检查关键字过滤（激进模式跳过）
+            // 检查关键词过滤（激进模式跳过）
             if (!isAggressive) {
                 String matchedKeywords = "";
                 boolean hasKeyword = false;
@@ -186,6 +249,27 @@ public final class RedPacketHook extends BaseWithDataHookItem {
             // 开始抢红包（传递激进模式标志）
             new PreGrabRedPacket().preGrabHb(this, billNo, authkey, title, redChannel, msgData, isAuto, isAggressive);
         }
+    }
+
+    private String listToCommaSeparatedString(List<String> list) {
+        if (list == null || list.isEmpty()) {
+            return "";
+        }
+        return list.stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.joining(","));
+    }
+
+    private List<String> splitStringToList(String str) {
+        if (str == null || str.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return Arrays.stream(str.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
     }
 
     public byte[] add4byte(byte[] data) throws IOException {
@@ -244,7 +328,7 @@ public final class RedPacketHook extends BaseWithDataHookItem {
                 String timeStr = LocalDateTime.ofInstant(Instant.ofEpochMilli(msgData.time * 1000), ZoneId.systemDefault())
                         .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-                sb.append("[QSad]未领取红包\n[红包类型:");
+                sb.append("[QSad]未领取红包:\n[红包类型:");
                 sb.append(channelName);
                 sb.append("]\n[群聊:");
                 sb.append(troopName);
@@ -262,7 +346,7 @@ public final class RedPacketHook extends BaseWithDataHookItem {
                     String title = reason.split("->")[0];
                     String keywords = reason.split("->")[1];
                     sb.append(title);
-                    sb.append(" 包含关键字");
+                    sb.append(" 包含关键词 ");
                     sb.append(keywords);
                 } else if (reasonType == 1) {
                     String actualAvg = reason.split("->")[0];

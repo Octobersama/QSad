@@ -1,7 +1,10 @@
 package sama.october.QSad.hook.api;
 
 import android.app.Activity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -9,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import sama.october.QSad.ui.host.HostUIFactory;
+import sama.october.QSad.R;
 import sama.october.QSad.hook.base.ApiHookItem;
 import sama.october.QSad.javaplugin.api.MsgData;
 import sama.october.QSad.utils.dexkit.DexKit;
@@ -115,8 +118,14 @@ public final class OnMsgMenuOpen extends ApiHookItem {
 
     private View createMenuItemView(String menuKey, Object msgRecord) {
         Activity activity = QQCurrentEnv.getActivity();
+        LinearLayout itemLayout = (LinearLayout) LayoutInflater.from(activity)
+                .inflate(R.layout.msgmenuitem, null);
+        TextView msgmenuitemTextView = itemLayout.findViewById(R.id.msgmenuitemTextView);
+
         String name = menuKey.split(",")[2];
-        View itemLayout = HostUIFactory.createMsgMenuItem(activity, name, view -> {
+        msgmenuitemTextView.setText(name);
+
+        itemLayout.setOnClickListener(view -> {
             try {
                 mActionMap.get(menuKey).onClick(new MsgData(msgRecord));
             } catch (Throwable th) {
