@@ -1,21 +1,15 @@
 package sama.october.QSad.hook.msg;
 
 import android.content.Context;
-import android.view.ContextThemeWrapper;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AlertDialog;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
+import android.app.AlertDialog;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import sama.october.QSad.hook.api.OnGetMsgRecord;
@@ -100,13 +94,16 @@ public final class MsgContentHook extends BaseSwitchHookItem {
     private void showEditDialog(long msgId, Map<Integer, String> items) {
         Context context = QQCurrentEnv.getActivity();
         LinearLayout container = new LinearLayout(context);
-        int padding = (int) (context.getResources().getDisplayMetrics().density * 16);
+        float density = context.getResources().getDisplayMetrics().density;
+        int padding = (int) (density * 16);
+        int fieldPadding = (int) (density * 8);
         container.setPadding(padding, padding, padding, padding);
         container.setOrientation(LinearLayout.VERTICAL);
 
         Integer[] keys = items.keySet().toArray(new Integer[0]);
         String[] values = items.values().toArray(new String[0]);
         Map<Integer, String> result = new LinkedHashMap<>();
+        List<EditText> editTexts = new ArrayList<>();
 
         if (items.isEmpty()) {
             TextView textView = new TextView(context);
@@ -117,38 +114,36 @@ public final class MsgContentHook extends BaseSwitchHookItem {
                     LinearLayout.LayoutParams.WRAP_CONTENT);
             params.gravity = Gravity.CENTER;
             container.addView(textView, params);
+        } else {
+            for (int i = 0; i < values.length; i++) {
+                EditText editText = new EditText(context);
+                editText.setHint(values[i]);
+                editText.setText(values[i]);
+                editText.setPadding(fieldPadding, fieldPadding, fieldPadding, fieldPadding);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+                if (i > 0) {
+                    params.topMargin = fieldPadding;
+                }
+                container.addView(editText, params);
+                editTexts.add(editText);
+            }
         }
 
-        for (int i = 0; i < items.size(); i++) {
-            TextInputLayout layout = new TextInputLayout(context);
-            layout.setHint(values[i]);
-            TextInputEditText editText = new TextInputEditText(context);
-            editText.setHint(values[i]);
-            editText.setText(values[i]);
-            editText.setPadding(padding / 2, padding / 2, padding / 2, padding / 2);
-            layout.addView(editText);
-            container.addView(layout);
-        }
-
-        Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
-        new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+        new AlertDialog.Builder(context)
                 .setTitle("可修改文本")
                 .setView(container)
+                .setNegativeButton("取消", null)
                 .setPositiveButton("确定", (dialog, which) -> {
-                    if (items.isEmpty()) {
+                    if (editTexts.isEmpty()) {
                         return;
                     }
 
-                    for (int i = 0; i < container.getChildCount(); i++) {
-                        View child = container.getChildAt(i);
-                        if (child instanceof TextInputLayout) {
-                            EditText editText = ((TextInputLayout) child).getEditText();
-                            if (editText != null) {
-                                String text = editText.getText().toString();
-                                if (!text.isEmpty()) {
-                                    result.put(keys[i], text);
-                                }
-                            }
+                    for (int i = 0; i < editTexts.size(); i++) {
+                        String text = editTexts.get(i).getText().toString();
+                        if (!text.isEmpty()) {
+                            result.put(keys[i], text);
                         }
                     }
 

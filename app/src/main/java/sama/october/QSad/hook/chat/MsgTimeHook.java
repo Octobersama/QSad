@@ -1,19 +1,19 @@
 package sama.october.QSad.hook.chat;
 
+import android.app.AlertDialog;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -139,7 +139,9 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
     }
 
     private class TimeFormatDialog {
-        private final AlertDialog mDialog;
+        private final boolean mUseHostStyle;
+        private final android.app.AlertDialog mHostDialog;
+        private final androidx.appcompat.app.AlertDialog mDialog;
         private final EditText mColorInput;
         private final EditText mFormatInput;
         private final TextView mPreviewText;
@@ -149,13 +151,72 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
         private String mConfirmedFormat;
 
         public TimeFormatDialog(Context context) {
-            LayoutInflater inflater = LayoutInflater.from(context);
-            View dialogView = inflater.inflate(R.layout.dialog_time_format, null);
+            mUseHostStyle = context.getPackageName() != null && context.getPackageName().contains("com.tencent.mobileqq");
+            View dialogView;
 
-            mColorInput = dialogView.findViewById(R.id.et_color);
-            mFormatInput = dialogView.findViewById(R.id.et_format);
-            mPreviewText = dialogView.findViewById(R.id.tv_preview);
-            mErrorText = dialogView.findViewById(R.id.tv_error);
+            if (mUseHostStyle) {
+                float density = context.getResources().getDisplayMetrics().density;
+                int padding = (int) (density * 16);
+                LinearLayout container = new LinearLayout(context);
+                container.setOrientation(LinearLayout.VERTICAL);
+                container.setPadding(padding, padding, padding, padding);
+
+                TextView colorLabel = new TextView(context);
+                colorLabel.setText("ARGB 颜色代码");
+                container.addView(colorLabel);
+
+                mColorInput = new EditText(context);
+                container.addView(mColorInput);
+
+                TextView formatLabel = new TextView(context);
+                formatLabel.setText("时间格式");
+                LinearLayout.LayoutParams formatParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                formatParams.topMargin = padding / 2;
+                container.addView(formatLabel, formatParams);
+
+                mFormatInput = new EditText(context);
+                container.addView(mFormatInput);
+
+                mErrorText = new TextView(context);
+                mErrorText.setVisibility(View.GONE);
+                LinearLayout.LayoutParams errParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                errParams.topMargin = padding / 2;
+                container.addView(mErrorText, errParams);
+
+                mPreviewText = new TextView(context);
+                mPreviewText.setGravity(Gravity.CENTER);
+                mPreviewText.setPadding(padding / 2, padding / 2, padding / 2, padding / 2);
+                LinearLayout.LayoutParams previewParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                previewParams.topMargin = padding / 2;
+                container.addView(mPreviewText, previewParams);
+
+                dialogView = container;
+                mHostDialog = new AlertDialog.Builder(context)
+                        .setTitle("时间格式设置")
+                        .setView(dialogView)
+                        .setPositiveButton("确认", null)
+                        .setNegativeButton("取消", null)
+                        .create();
+                mDialog = null;
+            } else {
+                LayoutInflater inflater = LayoutInflater.from(context);
+                dialogView = inflater.inflate(R.layout.dialog_time_format, null);
+                mColorInput = dialogView.findViewById(R.id.et_color);
+                mFormatInput = dialogView.findViewById(R.id.et_format);
+                mPreviewText = dialogView.findViewById(R.id.tv_preview);
+                mErrorText = dialogView.findViewById(R.id.tv_error);
+
+                mDialog = new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+                        .setTitle("时间格式设置")
+                        .setView(dialogView)
+                        .setPositiveButton("确认", null)
+                        .setNegativeButton("取消", null)
+                        .create();
+                mHostDialog = null;
+            }
 
             mColorInput.setText(colorToHex(mCurrentColor));
             mFormatInput.setText(mCurrentFormat);
@@ -165,67 +226,84 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
             mConfirmedColor = mCurrentColor;
             mConfirmedFormat = mCurrentFormat;
 
-            Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
-            AlertDialog.Builder builder = new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
-                    .setTitle("时间格式设置")
-                    .setView(dialogView)
-                    .setPositiveButton("确认", null)
-                    .setNegativeButton("取消", null);
-
-            mDialog = builder.create();
-
-            mDialog.setOnShowListener(dialogInterface -> {
-                mPositiveButton = mDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                Button negativeButton = mDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-
-                TextWatcher validationWatcher = new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        validateInputs();
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                    }
-                };
-
-                mColorInput.addTextChangedListener(validationWatcher);
-                mFormatInput.addTextChangedListener(validationWatcher);
-
-                mPositiveButton.setOnClickListener(v -> {
-                    if (validateInputs()) {
-                        try {
-                            mConfirmedColor = parseColor(mColorInput.getText().toString());
-                            mConfirmedFormat = mFormatInput.getText().toString();
-                            mCurrentColor = mConfirmedColor;
-                            mCurrentFormat = mConfirmedFormat;
-                            mDialog.dismiss();
-                        } catch (Exception e) {
-                            mErrorText.setText("处理输入时出错: " + e.getMessage());
-                            mErrorText.setVisibility(View.VISIBLE);
-                        }
-                    }
+            if (mUseHostStyle && mHostDialog != null) {
+                mHostDialog.setOnShowListener(dialogInterface -> {
+                    mPositiveButton = mHostDialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE);
+                    Button negativeButton = mHostDialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE);
+                    attachListeners(negativeButton);
                 });
-
-                negativeButton.setOnClickListener(v -> {
+                mHostDialog.setOnCancelListener(dialogInterface -> {
                     mCurrentColor = mConfirmedColor;
                     mCurrentFormat = mConfirmedFormat;
-                    mDialog.dismiss();
                 });
+            } else if (mDialog != null) {
+                mDialog.setOnShowListener(dialogInterface -> {
+                    mPositiveButton = mDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                    Button negativeButton = mDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                    attachListeners(negativeButton);
+                });
+                mDialog.setOnCancelListener(dialogInterface -> {
+                    mCurrentColor = mConfirmedColor;
+                    mCurrentFormat = mConfirmedFormat;
+                });
+            }
+        }
+
+        private void attachListeners(Button negativeButton) {
+            TextWatcher validationWatcher = new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    validateInputs();
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+            };
+
+            mColorInput.addTextChangedListener(validationWatcher);
+            mFormatInput.addTextChangedListener(validationWatcher);
+
+            mPositiveButton.setOnClickListener(v -> {
+                if (validateInputs()) {
+                    try {
+                        mConfirmedColor = parseColor(mColorInput.getText().toString());
+                        mConfirmedFormat = mFormatInput.getText().toString();
+                        mCurrentColor = mConfirmedColor;
+                        mCurrentFormat = mConfirmedFormat;
+                        if (mUseHostStyle && mHostDialog != null) {
+                            mHostDialog.dismiss();
+                        } else if (mDialog != null) {
+                            mDialog.dismiss();
+                        }
+                    } catch (Exception e) {
+                        mErrorText.setText("处理输入时出错: " + e.getMessage());
+                        mErrorText.setVisibility(View.VISIBLE);
+                    }
+                }
             });
 
-            mDialog.setOnCancelListener(dialogInterface -> {
+            negativeButton.setOnClickListener(v -> {
                 mCurrentColor = mConfirmedColor;
                 mCurrentFormat = mConfirmedFormat;
+                if (mUseHostStyle && mHostDialog != null) {
+                    mHostDialog.dismiss();
+                } else if (mDialog != null) {
+                    mDialog.dismiss();
+                }
             });
         }
 
         public void show() {
-            mDialog.show();
+            if (mUseHostStyle && mHostDialog != null) {
+                mHostDialog.show();
+            } else if (mDialog != null) {
+                mDialog.show();
+            }
         }
 
         private boolean validateInputs() {

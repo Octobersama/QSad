@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="⚡ 激进模式（极限性能换速度）" />
+        android:text="⚠激进模式（极限性能换速度）" />
 
     <TextView
         android:layout_width="match_parent"
@@ -82,7 +82,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:hint="关键词过滤（逗号分隔）">
+        android:hint="关键字过滤（逗号分隔）">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/keywordEditText"
@@ -95,7 +95,7 @@
         android:id="@+id/keywordSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="启用关键词过滤" />
+        android:text="启用关键字过滤" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"

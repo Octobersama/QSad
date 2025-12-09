@@ -5,11 +5,9 @@ import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.view.ContextThemeWrapper;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.materialswitch.MaterialSwitch;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -34,6 +32,9 @@ import sama.october.QSad.hook.api.OnMsgMenuOpen;
 import sama.october.QSad.hook.base.BaseWithDataHookItem;
 import sama.october.QSad.hook.base.HookItemAnnotation;
 import sama.october.QSad.javaplugin.api.MsgData;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import sama.october.QSad.utils.data.DataUtils;
 import sama.october.QSad.utils.data.TernaryDataList;
 import sama.october.QSad.utils.dexkit.DexKit;
@@ -46,7 +47,6 @@ import sama.october.QSad.utils.reflect.FieldUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
 import sama.october.QSad.utils.thread.SyncUtils;
 import sama.october.QSad.utils.ui.EnableDialog;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 @HookItemAnnotation(TAG = "自动抢红包", desc = "点击可设置一些参数")
 public final class RedPacketHook extends BaseWithDataHookItem {
@@ -154,8 +154,7 @@ public final class RedPacketHook extends BaseWithDataHookItem {
     public void onClick(View view) {
         final Context context = view.getContext();
         this.mTroopEnableInfo.updateInfo();
-        Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
-        LinearLayout linearLayout = (LinearLayout) LayoutInflater.from(themed).inflate(R.layout.redpacketmenu, (ViewGroup) null);
+        LinearLayout linearLayout = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.redpacketmenu, (ViewGroup) null);
         MaterialButton whitelistGroupButton = linearLayout.findViewById(R.id.whitelistGroupButton);
         final EditText averageEditText = linearLayout.findViewById(R.id.averageEditText);
         final EditText keywordEditText = linearLayout.findViewById(R.id.keywordEditText);
@@ -172,7 +171,7 @@ public final class RedPacketHook extends BaseWithDataHookItem {
         whitelistGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new EnableDialog(themed, mTroopEnableInfo).show();
+                new EnableDialog(context, mTroopEnableInfo).show();
             }
         });
 
@@ -188,26 +187,30 @@ public final class RedPacketHook extends BaseWithDataHookItem {
         keywordEditText.setText(listToCommaSeparatedString((List<String>) this.autoGrabHbConfig.getValue("keywords")));
         replyEditText.setText(listToCommaSeparatedString((List<String>) this.autoGrabHbConfig.getValue("replys")));
 
-        new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog).setTitle("设置参数").setView(linearLayout).setPositiveButton("确定", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                String avgText = averageEditText.getText().toString();
-                String keywordText = keywordEditText.getText().toString();
-                String replyText = replyEditText.getText().toString();
-                String delayText = delayEditText.getText().toString();
-                autoGrabHbConfig.setValue("average", Integer.valueOf(avgText.isEmpty() ? 0 : Integer.parseInt(avgText)));
-                autoGrabHbConfig.setValue("delay", Long.valueOf(delayText.isEmpty() ? 0L : Long.parseLong(delayText)));
-                autoGrabHbConfig.setValue("keywords", splitStringToList(keywordText));
-                autoGrabHbConfig.setValue("replys", splitStringToList(replyText));
-                autoGrabHbConfig.setIsAvailable("average", averageSwitch.isChecked());
-                autoGrabHbConfig.setIsAvailable("delay", delaySwitch.isChecked());
-                autoGrabHbConfig.setIsAvailable("keywords", keywordSwitch.isChecked());
-                autoGrabHbConfig.setIsAvailable("replys", replySwitch.isChecked());
-                commonHbConfig.put("isAuto", autoSwitch.isChecked());
-                commonHbConfig.put("isManual", manualSwitch.isChecked());
-                commonHbConfig.put("isAggressive", aggressiveSwitch.isChecked());
-            }
-        }).show();
+        new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+                .setTitle("设置参数")
+                .setView(linearLayout)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String avgText = averageEditText.getText().toString();
+                        String keywordText = keywordEditText.getText().toString();
+                        String replyText = replyEditText.getText().toString();
+                        String delayText = delayEditText.getText().toString();
+                        autoGrabHbConfig.setValue("average", Integer.valueOf(avgText.isEmpty() ? 0 : Integer.parseInt(avgText)));
+                        autoGrabHbConfig.setValue("delay", Long.valueOf(delayText.isEmpty() ? 0L : Long.parseLong(delayText)));
+                        autoGrabHbConfig.setValue("keywords", splitStringToList(keywordText));
+                        autoGrabHbConfig.setValue("replys", splitStringToList(replyText));
+                        autoGrabHbConfig.setIsAvailable("average", averageSwitch.isChecked());
+                        autoGrabHbConfig.setIsAvailable("delay", delaySwitch.isChecked());
+                        autoGrabHbConfig.setIsAvailable("keywords", keywordSwitch.isChecked());
+                        autoGrabHbConfig.setIsAvailable("replys", replySwitch.isChecked());
+                        commonHbConfig.put("isAuto", autoSwitch.isChecked());
+                        commonHbConfig.put("isManual", manualSwitch.isChecked());
+                        commonHbConfig.put("isAggressive", aggressiveSwitch.isChecked());
+                    }
+                })
+                .show();
     }
 
     private void grabHb(MsgData msgData, boolean isAuto) throws SecurityException {

@@ -1,18 +1,13 @@
 package sama.october.QSad.hook.social;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.view.ContextThemeWrapper;
 import android.widget.EditText;
-
-import androidx.appcompat.app.AlertDialog;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
+import android.widget.LinearLayout;
 
 import java.lang.reflect.Method;
 
@@ -66,26 +61,35 @@ public final class PaiYiPaiHook extends BaseSwitchHookItem {
     }
 
     private void showInputDialog(Activity activity, XC_MethodHook.MethodHookParam param) {
-        Context themed = new ContextThemeWrapper(activity, sama.october.QSad.R.style.Theme_QSad_Compose);
-        TextInputLayout layout = new TextInputLayout(themed);
-        layout.setHint("连拍次数 (1-200)");
-        TextInputEditText editText = new TextInputEditText(themed);
+        Context dialogContext = activity;
+        float density = dialogContext.getResources().getDisplayMetrics().density;
+        int padding = (int) (density * 16);
+
+        LinearLayout container = new LinearLayout(dialogContext);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setPadding(padding, padding, padding, padding);
+
+        EditText editText = new EditText(dialogContext);
+        editText.setHint("连拍次数 (1-200)");
 
         editText.setText("1");
         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
         editText.addTextChangedListener(createTextWatcher(editText));
-        layout.addView(editText);
+        container.addView(editText, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
 
-        new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+        AlertDialog dialog = new AlertDialog.Builder(dialogContext)
                 .setTitle("请输入次数")
-                .setView(layout)
+                .setView(container)
+                .setNegativeButton("取消", null)
                 .setPositiveButton("确定", (dialogInterface, which) -> {
                     String input = editText.getText() == null ? "" : editText.getText().toString();
                     int num = input.isEmpty() ? 1 : Integer.parseInt(input);
                     sendMultiplePaiYiPai(param, num);
                 })
-                .create()
-                .show();
+                .create();
+        dialog.show();
     }
 
     private TextWatcher createTextWatcher(EditText editText) {

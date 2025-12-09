@@ -1,14 +1,16 @@
 package sama.october.QSad.hook.msg;
 
 import android.content.Context;
-import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+
+import sama.october.QSad.R;
 
 import org.json.JSONObject;
 
@@ -111,8 +113,7 @@ public final class PicSummaryHook extends BaseWithDataHookItem {
         linearLayout.addView(keyLayout);
         linearLayout.addView(summaryLayout);
 
-        Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
-        new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+        new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                 .setTitle("设置图片外显文本")
                 .setView(linearLayout)
                 .setPositiveButton("保存", (dialog, which) -> {
@@ -120,7 +121,6 @@ public final class PicSummaryHook extends BaseWithDataHookItem {
                     dataMap.put("summaryOrUrl", summaryText.getText() == null ? "" : summaryText.getText().toString());
                     setNextPicSummary();
                 })
-                .create()
                 .show();
     }
 

@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="天"
-        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textColor="@color/md_theme_on_surface"
         android:textSize="14sp" />
 
     <EditText
@@ -17,14 +17,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
-        android:text="0" />
+        android:text="0"
+        android:textColor="@color/md_theme_on_surface" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="小时"
-        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textColor="@color/md_theme_on_surface"
         android:textSize="14sp" />
 
     <EditText
@@ -32,14 +33,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
-        android:text="0" />
+        android:text="0"
+        android:textColor="@color/md_theme_on_surface" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="分钟"
-        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textColor="@color/md_theme_on_surface"
         android:textSize="14sp" />
 
     <EditText
@@ -47,14 +49,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
-        android:text="0" />
+        android:text="0"
+        android:textColor="@color/md_theme_on_surface" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="秒"
-        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textColor="@color/md_theme_on_surface"
         android:textSize="14sp" />
 
     <EditText
@@ -62,6 +65,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
-        android:text="0" />
+        android:text="0"
+        android:textColor="@color/md_theme_on_surface" />
 
 </LinearLayout>

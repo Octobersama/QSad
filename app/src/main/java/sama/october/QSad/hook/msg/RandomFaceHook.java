@@ -19,7 +19,6 @@ import sama.october.QSad.utils.reflect.FieldUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
 import sama.october.QSad.utils.thread.SyncUtils;
 import android.app.AlertDialog;
-import android.view.ContextThemeWrapper;
 
 @HookItemAnnotation(TAG = "自定义随机表情", desc = "使用猜拳/骰子可自定义结果")
 public final class RandomFaceHook extends BaseSwitchHookItem {
@@ -144,10 +143,9 @@ public final class RandomFaceHook extends BaseSwitchHookItem {
             }
 
             SyncUtils.postDelayed(() -> {
-                ContextThemeWrapper themed = new ContextThemeWrapper(QQCurrentEnv.getActivity(), android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
-                new AlertDialog.Builder(themed)
+                AlertDialog dialog = new AlertDialog.Builder(QQCurrentEnv.getActivity())
                         .setTitle(title)
-                        .setSingleChoiceItems(values, -1, (dialog, which) -> {
+                        .setSingleChoiceItems(values, -1, (dialogInterface, which) -> {
                             ToastUtils.QQToast(2, values[which]);
                             String peerUid = FieldUtils.create(param.args[1]).withName("peerUid").getValue().toString();
                             int chatType = (int) FieldUtils.create(param.args[1]).withName("chatType").getValue();
@@ -156,10 +154,11 @@ public final class RandomFaceHook extends BaseSwitchHookItem {
                             } catch (Exception e) {
                                 ErrorOutput.itemHookError(RandomFaceHook.this, e);
                             }
-                            dialog.dismiss();
+                            dialogInterface.dismiss();
                         })
                         .setNegativeButton("取消", (d, w) -> d.dismiss())
-                        .show();
+                        .create();
+                dialog.show();
             }, 100);
             return null;
         });

@@ -20,4 +20,5 @@
     <!-- 错误色 -->
     <color name="md_theme_error">#B00020</color>
     <color name="md_theme_on_error">#FFFFFF</color>
+
 </resources>

@@ -2,8 +2,8 @@ package sama.october.QSad.hook.device;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.widget.EditText;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
@@ -43,15 +43,13 @@ public final class CustomDeviceHook extends BaseWithDataHookItem {
     @Override
     public void onClick(View v) {
         Context context = v.getContext();
-        Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
-
-        TextInputLayout layout = new TextInputLayout(themed);
+        TextInputLayout layout = new TextInputLayout(context);
         layout.setHint("伪装设备信息");
-        TextInputEditText editText = new TextInputEditText(themed);
+        TextInputEditText editText = new TextInputEditText(context);
         editText.setText(mFakeModel);
         layout.addView(editText);
 
-        new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+        new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                 .setTitle("设备信息")
                 .setView(layout)
                 .setPositiveButton("确定", (dialogInterface, i) -> mFakeModel = editText.getText() == null ? "" : editText.getText().toString())
