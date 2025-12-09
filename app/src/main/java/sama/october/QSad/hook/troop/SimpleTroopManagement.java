@@ -1,22 +1,37 @@
 package sama.october.QSad.hook.troop;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.view.ContextThemeWrapper;
+
 import java.lang.reflect.Method;
 
+import sama.october.QSad.R;
 import sama.october.QSad.hook.base.BaseSwitchHookItem;
 import sama.october.QSad.hook.base.HookItemAnnotation;
-import sama.october.QSad.ui.host.HostUIFactory;
 import sama.october.QSad.javaplugin.api.MsgData;
 import sama.october.QSad.utils.dexkit.DexKit;
 import sama.october.QSad.utils.hook.HookUtils;
+import sama.october.QSad.utils.hook.xpcompat.XC_MethodHook;
 import sama.october.QSad.utils.hook.xpcompat.XposedBridge;
 import sama.october.QSad.utils.qq.MsgTool;
 import sama.october.QSad.utils.qq.QQCurrentEnv;
+import sama.october.QSad.utils.qq.ToastUtils;
 import sama.october.QSad.utils.qq.TroopTool;
 import sama.october.QSad.utils.reflect.ClassUtils;
 import sama.october.QSad.utils.reflect.FieldUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
 
-@HookItemAnnotation(TAG = "???????", desc = "????????????????????????????????")
+@HookItemAnnotation(TAG = "简洁群管", desc = "点击群聊头像开启菜单，省去进入主页管理群员")
 public final class SimpleTroopManagement extends BaseSwitchHookItem {
     private static Method sOnClickAvatar;
 
@@ -36,6 +51,7 @@ public final class SimpleTroopManagement extends BaseSwitchHookItem {
                     .getValue();
             Object msgRecord = FieldUtils.create(aioMsgItem).inParent(ClassUtils._AIOMsgItem())
                     .ofType(ClassUtils._MsgRecord()).getValue();
+            View view = (View) param.args[0];
             final MsgData msgData = new MsgData(msgRecord);
 
             Object memberInfo = TroopTool.getMemberInfo(msgData.peerUin, QQCurrentEnv.getCurrentUin());
@@ -49,88 +65,196 @@ public final class SimpleTroopManagement extends BaseSwitchHookItem {
                 return XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
             }
 
-            String troopNick = TroopTool.getMemberName(msgData.peerUin, msgData.userUin);
+            Context context = view.getContext();
+            LinearLayout managementLayout = (LinearLayout) LayoutInflater.from(context)
+                    .inflate(R.layout.troopmanagement_simple, null);
+            View anchorView = ((Activity) context).getWindow().getDecorView();
+            PopupWindow popupWindow = new PopupWindow(managementLayout,
+                    ViewGroup.LayoutParams.MATCH_PARENT, anchorView.getHeight() / 2, true);
 
-            HostUIFactory.showTroopManagementPanel(QQCurrentEnv.getActivity(), msgData.userUin, troopNick,
-                    new HostUIFactory.TroopManagementHandler() {
-                        @Override
-                        public void onViewAvatar() {
-                            try {
-                                XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
-                            } catch (Throwable th) {
-                                // 忽略异常
-                            }
-                        }
-
-                        @Override
-                        public void onRecall() {
-                            try {
-                                MsgTool.recallMsg(msgData.contact, msgData.msgId);
-                            } catch (Throwable th) {
-                                // 忽略异常
-                            }
-                        }
-
-                        @Override
-                        public void onSetAdmin(boolean enable) {
-                            try {
-                                TroopTool.setGroupAdmin(msgData.peerUin, msgData.userUin, enable);
-                            } catch (Throwable th) {
-                                // 忽略异常
-                            }
-                        }
-
-                        @Override
-                        public void onShutUp(long seconds) {
-                            try {
-                                TroopTool.shutUp(msgData.peerUin, msgData.userUin, seconds);
-                            } catch (Exception e) {
-                                // 忽略异常
-                            }
-                        }
-
-                        @Override
-                        public void onSetTitle(String title) {
-                            try {
-                                TroopTool.setGroupMemberTitle(msgData.peerUin, msgData.userUin, title);
-                            } catch (Exception e) {
-                                // 忽略异常
-                            }
-                        }
-
-                        @Override
-                        public void onSetCard(String card) {
-                            try {
-                                TroopTool.changeMemberName(msgData.peerUin, msgData.userUin, card);
-                            } catch (Exception e) {
-                                // 忽略异常
-                            }
-                        }
-
-                        @Override
-                        public void onKick(boolean ban) {
-                            try {
-                                if (ban) {
-                                    TroopTool.kickGroup(msgData.peerUin, msgData.userUin, true);
-                                } else {
-                                    TroopTool.kickGroup(msgData.peerUid, msgData.userUin, false);
-                                }
-                            } catch (Throwable th) {
-                                // 忽略异常
-                            }
-                        }
-
-                        @Override
-                        public void onShutUpAll(boolean enable) {
-                            try {
-                                TroopTool.shutUpAll(msgData.peerUin, enable);
-                            } catch (Throwable th) {
-                                // 忽略异常
-                            }
-                        }
-                    });
+            setOnClickListener(managementLayout, popupWindow, param, msgData, context);
+            popupWindow.showAtLocation(anchorView, Gravity.BOTTOM, 0, 0);
 
             return null;
+        });
+    }
+
+    private int getInputValue(EditText editText) {
+        try {
+            String input = editText.getText().toString().trim();
+            if (input.isEmpty()) {
+                return 0;
+            }
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    private void setOnClickListener(LinearLayout parent, PopupWindow popupWindow,
+                                    XC_MethodHook.MethodHookParam param, MsgData msgData, Context baseContext) {
+        final Context context = baseContext;
+        final Context dialogContext = new ContextThemeWrapper(baseContext, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
+        String troopNick = TroopTool.getMemberName(msgData.peerUin, msgData.userUin);
+
+        ((TextView) parent.findViewById(R.id.troopmanagementUinText)).setText(msgData.userUin);
+        ((TextView) parent.findViewById(R.id.troopmanagementNickText)).setText(troopNick);
+
+        parent.findViewById(R.id.troopmanagementButton1).setOnClickListener(v -> {
+            try {
+                XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
+            } catch (Throwable th) {
+                // 忽略异常
+            } finally {
+                popupWindow.dismiss();
+            }
+        });
+
+        parent.findViewById(R.id.troopmanagementButton2).setOnClickListener(v -> {
+            try {
+                MsgTool.recallMsg(msgData.contact, msgData.msgId);
+            } catch (Throwable th) {
+                // 忽略异常
+            } finally {
+                popupWindow.dismiss();
+            }
+        });
+
+        parent.findViewById(R.id.troopmanagementButton3).setOnClickListener(v -> {
+            try {
+                TroopTool.setGroupAdmin(msgData.peerUin, msgData.userUin, true);
+            } catch (Throwable th) {
+                // 忽略异常
+            } finally {
+                popupWindow.dismiss();
+            }
+        });
+
+        parent.findViewById(R.id.troopmanagementButton4).setOnClickListener(v -> {
+            try {
+                TroopTool.setGroupAdmin(msgData.peerUin, msgData.userUin, false);
+            } catch (Throwable th) {
+                // 忽略异常
+            } finally {
+                popupWindow.dismiss();
+            }
+        });
+
+        parent.findViewById(R.id.troopmanagementButton5).setOnClickListener(v -> {
+            LinearLayout shutUpLayout = (LinearLayout) LayoutInflater.from(dialogContext)
+                    .inflate(R.layout.shutuplayout, null);
+
+            final EditText etDays = shutUpLayout.findViewById(R.id.etDays);
+            final EditText etHours = shutUpLayout.findViewById(R.id.etHours);
+            final EditText etMinutes = shutUpLayout.findViewById(R.id.etMinutes);
+            final EditText etSeconds = shutUpLayout.findViewById(R.id.etSeconds);
+
+            new AlertDialog.Builder(dialogContext)
+                    .setView(shutUpLayout)
+                    .setTitle("设置禁言时间")
+                    .setPositiveButton("确定", (dialog, which) -> {
+                        int days = getInputValue(etDays);
+                        int hours = getInputValue(etHours);
+                        int minutes = getInputValue(etMinutes);
+                        int seconds = getInputValue(etSeconds);
+
+                        if (days < 0 || hours < 0 || minutes < 0 || seconds < 0) {
+                            ToastUtils.QQToast(1, "请输入非负数");
+                            return;
+                        }
+
+                        long totalSeconds = seconds + minutes * 60L + hours * 3600L + days * 86400L;
+                        try {
+                            TroopTool.shutUp(msgData.peerUin, msgData.userUin, totalSeconds);
+                        } catch (Exception e) {
+                            // 忽略异常
+                        }
+                    }).show();
+            popupWindow.dismiss();
+        });
+
+        parent.findViewById(R.id.troopmanagementButton6).setOnClickListener(v -> {
+            try {
+                TroopTool.shutUp(msgData.peerUin, msgData.userUin, 0);
+            } catch (Throwable th) {
+                // 忽略异常
+            } finally {
+                popupWindow.dismiss();
+            }
+        });
+
+        parent.findViewById(R.id.troopmanagementButton7).setOnClickListener(v -> {
+            final EditText editText = new EditText(dialogContext);
+            new AlertDialog.Builder(dialogContext)
+                    .setTitle("设置头衔")
+                    .setView(editText)
+                    .setPositiveButton("确定", (dialog, which) -> {
+                        try {
+                            TroopTool.setGroupMemberTitle(msgData.peerUin, msgData.userUin,
+                                    editText.getText().toString());
+                        } catch (Exception e) {
+                            // 忽略异常
+                        }
+                    }).show();
+            popupWindow.dismiss();
+        });
+
+        parent.findViewById(R.id.troopmanagementButton8).setOnClickListener(v -> {
+            final EditText editText = new EditText(dialogContext);
+            editText.setText(troopNick);
+            new AlertDialog.Builder(dialogContext)
+                    .setTitle("设置群昵称")
+                    .setView(editText)
+                    .setNegativeButton("取消", null)
+                    .setPositiveButton("确定", (dialog, which) -> {
+                        try {
+                            TroopTool.changeMemberName(msgData.peerUin, msgData.userUin,
+                                    editText.getText().toString());
+                        } catch (Exception e) {
+                            // 忽略异常
+                        }
+                    }).show();
+            popupWindow.dismiss();
+        });
+
+        parent.findViewById(R.id.troopmanagementButton9).setOnClickListener(v -> {
+            try {
+                TroopTool.kickGroup(msgData.peerUid, msgData.userUin, false);
+            } catch (Throwable th) {
+                // 忽略异常
+            } finally {
+                popupWindow.dismiss();
+            }
+        });
+
+        parent.findViewById(R.id.troopmanagementButton10).setOnClickListener(v -> {
+            try {
+                TroopTool.kickGroup(msgData.peerUin, msgData.userUin, true);
+            } catch (Throwable th) {
+                // 忽略异常
+            } finally {
+                popupWindow.dismiss();
+            }
+        });
+
+        parent.findViewById(R.id.troopmanagementButton11).setOnClickListener(v -> {
+            try {
+                TroopTool.shutUpAll(msgData.peerUin, true);
+            } catch (Throwable th) {
+                // 忽略异常
+            } finally {
+                popupWindow.dismiss();
+            }
+        });
+
+        parent.findViewById(R.id.troopmanagementButton12).setOnClickListener(v -> {
+            try {
+                TroopTool.shutUpAll(msgData.peerUin, false);
+            } catch (Throwable th) {
+                // 忽略异常
+            } finally {
+                popupWindow.dismiss();
+            }
         });
     }
 }

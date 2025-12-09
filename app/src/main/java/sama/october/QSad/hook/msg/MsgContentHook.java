@@ -1,12 +1,18 @@
 package sama.october.QSad.hook.msg;
 
-import android.view.View;
+import android.content.Context;
+import android.view.ContextThemeWrapper;
+import android.view.Gravity;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import sama.october.QSad.ui.host.HostUIFactory;
 import sama.october.QSad.hook.api.OnGetMsgRecord;
 import sama.october.QSad.hook.api.OnMsgMenuOpen;
 import sama.october.QSad.hook.base.BaseSwitchHookItem;
@@ -87,6 +93,62 @@ public final class MsgContentHook extends BaseSwitchHookItem {
     }
 
     private void showEditDialog(long msgId, Map<Integer, String> items) {
-        HostUIFactory.showMsgContentEditor(QQCurrentEnv.getActivity(), items, result -> mMsgMap.put(msgId, result));
+        Context context = QQCurrentEnv.getActivity();
+        Context dialogContext = new ContextThemeWrapper(context, androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        LinearLayout container = new LinearLayout(dialogContext);
+        int padding = (int) (dialogContext.getResources().getDisplayMetrics().density * 16);
+        container.setPadding(padding, padding, padding, padding);
+        container.setOrientation(LinearLayout.VERTICAL);
+
+        Integer[] keys = items.keySet().toArray(new Integer[0]);
+        String[] values = items.values().toArray(new String[0]);
+        Map<Integer, String> result = new LinkedHashMap<>();
+        ArrayList<EditText> editTexts = new ArrayList<>();
+
+        if (items.isEmpty()) {
+            TextView textView = new TextView(dialogContext);
+            textView.setText("无可修改文本");
+            textView.setTextSize(16);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.gravity = Gravity.CENTER;
+            container.addView(textView, params);
+        }
+
+        for (int i = 0; i < items.size(); i++) {
+            EditText editText = new EditText(dialogContext);
+            editText.setHint(values[i]);
+            editText.setText(values[i]);
+            editText.setPadding(padding / 2, padding / 2, padding / 2, padding / 2);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            if (i > 0) {
+                params.topMargin = padding / 2;
+            }
+            container.addView(editText, params);
+            editTexts.add(editText);
+        }
+
+        new AlertDialog.Builder(dialogContext)
+                .setTitle("可修改文本")
+                .setView(container)
+                .setPositiveButton("确定", (dialog, which) -> {
+                    if (items.isEmpty()) {
+                        return;
+                    }
+
+                    for (int i = 0; i < editTexts.size(); i++) {
+                        EditText editText = editTexts.get(i);
+                        String text = editText.getText().toString();
+                        if (!text.isEmpty()) {
+                            result.put(keys[i], text);
+                        }
+                    }
+
+                    mMsgMap.put(msgId, result);
+                })
+                .show();
     }
 }
