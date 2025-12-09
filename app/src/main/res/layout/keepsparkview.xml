@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:ems="10"
-        android:layout_height="wrap_content"
-        android:hint="请输入消息"
-        android:gravity="center"
-        android:id="@+id/keepspark_msg"
-        android:layout_margin="20dp"/>
-
-    <TextView
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/round"
-        android:text="设置续火好友"
-        android:gravity="center"
-        android:layout_margin="20dp"
-        android:id="@+id/keepspark_friend"/>
+        android:hint="续火消息内容">
 
-    <TextView
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/keepspark_msg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/keepspark_friend"
+        style="@style/Widget.Material3.Button.TonalButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/round"
-        android:text="设置续火群聊"
-        android:gravity="center"
-        android:layout_margin="20dp"
-        android:id="@+id/keepspark_troop"/>
+        android:layout_marginTop="16dp"
+        android:text="设置续火好友" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/keepspark_troop"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="设置续火群聊" />
 
 </LinearLayout>
