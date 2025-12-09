@@ -1,16 +1,12 @@
 package sama.october.QSad.hook.device;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.view.ContextThemeWrapper;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.lang.reflect.Method;
 
+import sama.october.QSad.ui.host.HostUIFactory;
 import sama.october.QSad.hook.base.BaseWithDataHookItem;
 import sama.october.QSad.hook.base.HookItemAnnotation;
 import sama.october.QSad.utils.hook.HookUtils;
@@ -43,29 +39,7 @@ public final class CustomDeviceHook extends BaseWithDataHookItem {
     @Override
     public void onClick(View v) {
         Context baseContext = v.getContext();
-        Context dialogContext = new ContextThemeWrapper(baseContext, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
-
-        int padding = (int) (dialogContext.getResources().getDisplayMetrics().density * 16);
-        LinearLayout container = new LinearLayout(dialogContext);
-        container.setOrientation(LinearLayout.VERTICAL);
-        container.setPadding(padding, padding, padding, padding);
-
-        TextView label = new TextView(dialogContext);
-        label.setText("伪装设备信息");
-        label.setTextSize(14);
-        container.addView(label);
-
-        EditText editText = new EditText(dialogContext);
-        editText.setHint("例如：MI 13 / Pixel");
-        editText.setText(mFakeModel);
-        container.addView(editText);
-
-        new AlertDialog.Builder(dialogContext)
-                .setTitle("设备信息")
-                .setView(container)
-                .setPositiveButton("确定", (dialogInterface, i) -> mFakeModel = editText.getText() == null ? "" : editText.getText().toString())
-                .setNegativeButton("取消", null)
-                .show();
+        HostUIFactory.showFakeDeviceDialog(baseContext, mFakeModel, value -> mFakeModel = value);
     }
 
     @Override

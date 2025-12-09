@@ -1,13 +1,5 @@
 package sama.october.QSad.hook.msg;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.view.ContextThemeWrapper;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -18,11 +10,14 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.view.View;
 import sama.october.QSad.hook.api.OnSendMsg;
 import sama.october.QSad.hook.base.BaseWithDataHookItem;
 import sama.october.QSad.hook.base.HookItemAnnotation;
+import sama.october.QSad.ui.host.HostUIFactory;
 import sama.october.QSad.utils.data.DataUtils;
 import sama.october.QSad.utils.json.JsonUtil;
+import sama.october.QSad.utils.qq.QQCurrentEnv;
 import sama.october.QSad.utils.reflect.FieldUtils;
 import sama.october.QSad.utils.thread.SyncUtils;
 
@@ -88,45 +83,11 @@ public final class PicSummaryHook extends BaseWithDataHookItem {
 
     @Override
     public void onClick(View v) {
-        Context baseContext = v.getContext();
-        Context dialogContext = new ContextThemeWrapper(baseContext, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
-
-        int padding = (int) (dialogContext.getResources().getDisplayMetrics().density * 16);
-        LinearLayout container = new LinearLayout(dialogContext);
-        container.setOrientation(LinearLayout.VERTICAL);
-        container.setPadding(padding, padding, padding, padding);
-
-        TextView keyLabel = new TextView(dialogContext);
-        keyLabel.setText("需要显示的 key");
-        keyLabel.setTextSize(14);
-        container.addView(keyLabel);
-
-        EditText keyText = new EditText(dialogContext);
-        keyText.setText(dataMap.get("key"));
-        keyText.setHint("例如 data.title");
-        container.addView(keyText);
-
-        TextView summaryLabel = new TextView(dialogContext);
-        summaryLabel.setText("普通外显或 api 链接");
-        summaryLabel.setTextSize(14);
-        summaryLabel.setPadding(0, padding / 2, 0, 0);
-        container.addView(summaryLabel);
-
-        EditText summaryText = new EditText(dialogContext);
-        summaryText.setText(dataMap.get("summaryOrUrl"));
-        summaryText.setHint("支持 Json / 文本 / URL");
-        container.addView(summaryText);
-
-        new AlertDialog.Builder(dialogContext)
-                .setTitle("设置图片外显文本")
-                .setView(container)
-                .setPositiveButton("保存", (dialog, which) -> {
-                    dataMap.put("key", keyText.getText() == null ? "" : keyText.getText().toString());
-                    dataMap.put("summaryOrUrl", summaryText.getText() == null ? "" : summaryText.getText().toString());
-                    setNextPicSummary();
-                })
-                .setNegativeButton("取消", null)
-                .show();
+        HostUIFactory.showPicSummaryConfig(QQCurrentEnv.getActivity(), dataMap, updated -> {
+            dataMap.clear();
+            dataMap.putAll(updated);
+            setNextPicSummary();
+        });
     }
 
     private void setNextPicSummary() {

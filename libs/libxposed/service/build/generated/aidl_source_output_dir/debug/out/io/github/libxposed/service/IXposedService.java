@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Using: C:\Users\35181\AppData\Local\Android\Sdk\build-tools\35.0.0\aidl.exe -pC:\Users\35181\AppData\Local\Android\Sdk\platforms\android-36\framework.aidl -oC:\Users\35181\AndroidStudioProjects\QSad\libs\libxposed\service\build\generated\aidl_source_output_dir\debug\out -IC:\Users\35181\AndroidStudioProjects\QSad\libs\libxposed\service\service\interface\src\main\aidl -IC:\Users\35181\AndroidStudioProjects\QSad\libs\libxposed\service\src\debug\aidl -dC:\Users\35181\AppData\Local\Temp\aidl2930025740836481811.d C:\Users\35181\AndroidStudioProjects\QSad\libs\libxposed\service\service\interface\src\main\aidl\io\github\libxposed\service\IXposedService.aidl
+ * Using: C:\Users\35181\AppData\Local\Android\Sdk\build-tools\35.0.0\aidl.exe -pC:\Users\35181\AppData\Local\Android\Sdk\platforms\android-36\framework.aidl -oC:\Users\35181\AndroidStudioProjects\QSad\libs\libxposed\service\build\generated\aidl_source_output_dir\debug\out -IC:\Users\35181\AndroidStudioProjects\QSad\libs\libxposed\service\service\interface\src\main\aidl -IC:\Users\35181\AndroidStudioProjects\QSad\libs\libxposed\service\src\debug\aidl -dC:\Users\35181\AppData\Local\Temp\aidl9141410970739739691.d C:\Users\35181\AndroidStudioProjects\QSad\libs\libxposed\service\service\interface\src\main\aidl\io\github\libxposed\service\IXposedService.aidl
  */
 package io.github.libxposed.service;
 public interface IXposedService extends android.os.IInterface

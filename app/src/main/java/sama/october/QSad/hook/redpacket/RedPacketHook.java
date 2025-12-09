@@ -1,18 +1,12 @@
 package sama.october.QSad.hook.redpacket;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Switch;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import android.view.View;
 import java.net.URLEncoder;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -27,6 +21,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import sama.october.QSad.R;
+import sama.october.QSad.ui.host.HostUIFactory;
 import sama.october.QSad.hook.api.OnMsg;
 import sama.october.QSad.hook.api.OnMsgMenuOpen;
 import sama.october.QSad.hook.base.BaseWithDataHookItem;
@@ -43,7 +38,6 @@ import sama.october.QSad.utils.reflect.ClassUtils;
 import sama.october.QSad.utils.reflect.FieldUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
 import sama.october.QSad.utils.thread.SyncUtils;
-import sama.october.QSad.ui.host.dialog.EnableDialog;
 
 @HookItemAnnotation(TAG = "自动抢红包", desc = "点击可设置一些参数")
 public final class RedPacketHook extends BaseWithDataHookItem {
@@ -150,55 +144,7 @@ public final class RedPacketHook extends BaseWithDataHookItem {
     @Override
     public void onClick(View view) {
         final Context context = view.getContext();
-        this.mTroopEnableInfo.updateInfo();
-        View dialogView = LayoutInflater.from(context).inflate(R.layout.host_red_packet_menu, null);
-        Button whitelistGroupButton = dialogView.findViewById(R.id.whitelistGroupButton);
-        final EditText averageEditText = dialogView.findViewById(R.id.averageEditText);
-        final EditText keywordEditText = dialogView.findViewById(R.id.keywordEditText);
-        final EditText replyEditText = dialogView.findViewById(R.id.replyEditText);
-        final EditText delayEditText = dialogView.findViewById(R.id.delayEditText);
-        final Switch averageSwitch = dialogView.findViewById(R.id.averageSwitch);
-        final Switch keywordSwitch = dialogView.findViewById(R.id.keywordSwitch);
-        final Switch replySwitch = dialogView.findViewById(R.id.replySwitch);
-        final Switch delaySwitch = dialogView.findViewById(R.id.delaySwitch);
-        final Switch autoSwitch = dialogView.findViewById(R.id.autoSwitch);
-        final Switch manualSwitch = dialogView.findViewById(R.id.manualSwitch);
-        final Switch aggressiveSwitch = dialogView.findViewById(R.id.aggressiveSwitch);
-
-        whitelistGroupButton.setOnClickListener(v -> new EnableDialog(context, mTroopEnableInfo).show());
-
-        averageSwitch.setChecked(this.autoGrabHbConfig.getIsAvailable("average"));
-        delaySwitch.setChecked(this.autoGrabHbConfig.getIsAvailable("delay"));
-        keywordSwitch.setChecked(this.autoGrabHbConfig.getIsAvailable("keywords"));
-        replySwitch.setChecked(this.autoGrabHbConfig.getIsAvailable("replys"));
-        autoSwitch.setChecked(this.commonHbConfig.get("isAuto").booleanValue());
-        manualSwitch.setChecked(this.commonHbConfig.get("isManual").booleanValue());
-        aggressiveSwitch.setChecked(this.commonHbConfig.get("isAggressive").booleanValue());
-        averageEditText.setText(this.autoGrabHbConfig.getValue("average").toString());
-        delayEditText.setText(this.autoGrabHbConfig.getValue("delay").toString());
-        keywordEditText.setText(listToCommaSeparatedString((List<String>) this.autoGrabHbConfig.getValue("keywords")));
-        replyEditText.setText(listToCommaSeparatedString((List<String>) this.autoGrabHbConfig.getValue("replys")));
-
-        new AlertDialog.Builder(context).setTitle("设置参数").setView(dialogView).setPositiveButton("确定", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                String avgText = averageEditText.getText().toString();
-                String keywordText = keywordEditText.getText().toString();
-                String replyText = replyEditText.getText().toString();
-                String delayText = delayEditText.getText().toString();
-                autoGrabHbConfig.setValue("average", Integer.valueOf(avgText.isEmpty() ? 0 : Integer.parseInt(avgText)));
-                autoGrabHbConfig.setValue("delay", Long.valueOf(delayText.isEmpty() ? 0L : Long.parseLong(delayText)));
-                autoGrabHbConfig.setValue("keywords", splitStringToList(keywordText));
-                autoGrabHbConfig.setValue("replys", splitStringToList(replyText));
-                autoGrabHbConfig.setIsAvailable("average", averageSwitch.isChecked());
-                autoGrabHbConfig.setIsAvailable("delay", delaySwitch.isChecked());
-                autoGrabHbConfig.setIsAvailable("keywords", keywordSwitch.isChecked());
-                autoGrabHbConfig.setIsAvailable("replys", replySwitch.isChecked());
-                commonHbConfig.put("isAuto", autoSwitch.isChecked());
-                commonHbConfig.put("isManual", manualSwitch.isChecked());
-                commonHbConfig.put("isAggressive", aggressiveSwitch.isChecked());
-            }
-        }).show();
+        HostUIFactory.showRedPacketConfig(context, autoGrabHbConfig, commonHbConfig, mTroopEnableInfo);
     }
 
     private void grabHb(MsgData msgData, boolean isAuto) throws SecurityException {
@@ -240,27 +186,6 @@ public final class RedPacketHook extends BaseWithDataHookItem {
             // 开始抢红包（传递激进模式标志）
             new PreGrabRedPacket().preGrabHb(this, billNo, authkey, title, redChannel, msgData, isAuto, isAggressive);
         }
-    }
-
-    private String listToCommaSeparatedString(List<String> list) {
-        if (list == null || list.isEmpty()) {
-            return "";
-        }
-        return list.stream()
-                .filter(Objects::nonNull)
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.joining(","));
-    }
-
-    private List<String> splitStringToList(String str) {
-        if (str == null || str.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return Arrays.stream(str.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.toList());
     }
 
     public byte[] add4byte(byte[] data) throws IOException {

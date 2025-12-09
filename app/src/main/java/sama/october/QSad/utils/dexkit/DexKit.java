@@ -1,6 +1,5 @@
 package sama.october.QSad.utils.dexkit;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Process;
@@ -31,6 +30,7 @@ import sama.october.QSad.utils.hook.xpcompat.XposedHelpers;
 import sama.october.QSad.utils.qq.HostInfo;
 import sama.october.QSad.utils.reflect.ClassUtils;
 import sama.october.QSad.utils.thread.SyncUtils;
+import sama.october.QSad.ui.host.HostUIFactory;
 
 public class DexKit {
     private static Map<String, String> sClassMap = new HashMap<>();
@@ -69,24 +69,18 @@ public class DexKit {
                     @Override
                     protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) {
                         Context context = (Context) param.thisObject;
-                        AlertDialog dialog = new AlertDialog.Builder(context, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT)
-                                .setTitle("查找方法")
-                                .setMessage("查找方法中，请耐心等待")
-                                .setCancelable(false)
-                                .create();
-                        dialog.show();
-
-                        SyncUtils.runOnNewThread("DexKit", () -> {
+                        HostUIFactory.showDexKitFindingDialog(context, () -> {
                             try {
                                 doFind();
                                 saveData();
-                                dialog.setMessage("查找完成，保存方法并关闭应用");
-                                Thread.sleep(500);
-                                Process.killProcess(Process.myPid());
                             } catch (Throwable e) {
                                 // 忽略查找过程中的异常
-                            } finally {
-                                dialog.dismiss();
+                            }
+                        }, () -> {
+                            try {
+                                Process.killProcess(Process.myPid());
+                            } catch (Throwable e) {
+                                // 忽略异常
                             }
                         });
                     }
