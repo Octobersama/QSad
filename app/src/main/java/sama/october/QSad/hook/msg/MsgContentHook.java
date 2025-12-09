@@ -1,6 +1,5 @@
 package sama.october.QSad.hook.msg;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.view.Gravity;
 import android.widget.EditText;
@@ -18,6 +17,8 @@ import sama.october.QSad.hook.base.HookItemAnnotation;
 import sama.october.QSad.utils.error.ErrorOutput;
 import sama.october.QSad.utils.qq.QQCurrentEnv;
 import sama.october.QSad.utils.reflect.FieldUtils;
+import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 @HookItemAnnotation(TAG = "修改本地消息文本", desc = "长按消息出现修改文本选项，滑动或重新进入聊天界面刷新")
 public final class MsgContentHook extends BaseSwitchHookItem {
@@ -115,7 +116,7 @@ public final class MsgContentHook extends BaseSwitchHookItem {
             container.addView(editText);
         }
 
-        new AlertDialog.Builder(context, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT)
+        new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                 .setTitle("可修改文本")
                 .setView(container)
                 .setPositiveButton("确定", (dialog, which) -> {

@@ -1,7 +1,6 @@
 package sama.october.QSad.javaplugin.loader;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +16,8 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import sama.october.QSad.R;
 
@@ -107,7 +108,7 @@ public class PluginInfo implements OnClickListener {
 
         deleteButton.setOnClickListener(view -> {
             popupWindow.dismiss();
-            new AlertDialog.Builder(activity, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT)
+            new MaterialAlertDialogBuilder(activity, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                     .setNegativeButton("取消", null)
                     .setTitle("提示")
                     .setMessage("确认删除该脚本？")
@@ -116,5 +117,17 @@ public class PluginInfo implements OnClickListener {
                     .create()
                     .show();
         });
+    }
+
+    public String getPluginVersion() {
+        return mPluginVersion;
+    }
+
+    public String getAuthorName() {
+        return mAuthorName;
+    }
+
+    public String getDesc() {
+        return mDesc;
     }
 }

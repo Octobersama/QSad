@@ -1,7 +1,6 @@
 package sama.october.QSad.hook.social;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -17,6 +16,8 @@ import sama.october.QSad.utils.hook.xpcompat.XposedBridge;
 import sama.october.QSad.utils.qq.QQCurrentEnv;
 import sama.october.QSad.utils.reflect.ClassUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
+import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 @HookItemAnnotation(TAG = "拍一拍连拍", desc = "双击头像后可输入次数(单日上限200)")
 public final class PaiYiPaiHook extends BaseSwitchHookItem {
@@ -65,7 +66,7 @@ public final class PaiYiPaiHook extends BaseSwitchHookItem {
         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
         editText.addTextChangedListener(createTextWatcher(editText));
 
-        new AlertDialog.Builder(activity, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT)
+        new MaterialAlertDialogBuilder(activity, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                 .setTitle("请输入次数")
                 .setView(editText)
                 .setPositiveButton("确定", (dialogInterface, which) -> {

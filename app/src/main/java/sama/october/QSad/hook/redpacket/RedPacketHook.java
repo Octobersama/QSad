@@ -1,6 +1,5 @@
 package sama.october.QSad.hook.redpacket;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
@@ -45,6 +44,8 @@ import sama.october.QSad.utils.reflect.FieldUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
 import sama.october.QSad.utils.thread.SyncUtils;
 import sama.october.QSad.utils.ui.EnableDialog;
+import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 @HookItemAnnotation(TAG = "自动抢红包", desc = "点击可设置一些参数")
 public final class RedPacketHook extends BaseWithDataHookItem {
@@ -185,7 +186,7 @@ public final class RedPacketHook extends BaseWithDataHookItem {
         keywordEditText.setText(listToCommaSeparatedString((List<String>) this.autoGrabHbConfig.getValue("keywords")));
         replyEditText.setText(listToCommaSeparatedString((List<String>) this.autoGrabHbConfig.getValue("replys")));
 
-        new AlertDialog.Builder(context, 5).setTitle("设置参数").setView(linearLayout).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+        new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog).setTitle("设置参数").setView(linearLayout).setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 String avgText = averageEditText.getText().toString();

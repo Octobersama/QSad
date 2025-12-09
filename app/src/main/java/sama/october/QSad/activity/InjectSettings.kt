@@ -1,6 +1,7 @@
 package sama.october.QSad.activity
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -23,7 +24,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.UploadFile
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -60,6 +60,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import sama.october.QSad.R
@@ -75,6 +77,7 @@ class InjectSettings : ModuleComponentActivity() {
 
     private lateinit var configFolder: File
     private lateinit var exportDir: File
+    private val activityScope = MainScope()
 
     companion object {
         const val PICK_IMAGE_REQUEST = 1000
@@ -97,8 +100,31 @@ class InjectSettings : ModuleComponentActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode != RESULT_OK || data == null) {
+            return
+        }
+        when (requestCode) {
+            PICK_IMAGE_REQUEST -> {
+                activityScope.launch {
+                    handleImagePick(this@InjectSettings, data.data)
+                }
+            }
+            IMPORT_REQUEST_CODE -> {
+                activityScope.launch {
+                    val refreshed = importConfig(this@InjectSettings, configFolder, data.data)
+                    if (refreshed) {
+                        MainHook.initData()
+                    }
+                }
+            }
+        }
+    }
+
     override fun onDestroy() {
         MainHook.savaData()
+        activityScope.cancel()
         super.onDestroy()
     }
 }
@@ -119,12 +145,6 @@ private fun SettingsPage(
         }
     }
     var hookRefreshToken by remember { mutableIntStateOf(0) }
-
-    val imagePickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        scope.launch {
-            handleImagePick(context, uri)
-        }
-    }
 
     val importConfigLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         scope.launch {
@@ -183,14 +203,6 @@ private fun SettingsPage(
                                 exportConfig(context, configFolder, exportDir)
                             }
                         }
-                    )
-                }
-                item {
-                    ActionCard(
-                        title = "添加一张图标",
-                        description = "为部分功能准备自定义图片",
-                        icon = Icons.Outlined.Image,
-                        onClick = { imagePickerLauncher.launch("image/*") }
                     )
                 }
                 item {

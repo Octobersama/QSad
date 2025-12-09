@@ -1,6 +1,5 @@
 package sama.october.QSad.hook.chat;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.Editable;
@@ -25,6 +24,8 @@ import sama.october.QSad.hook.base.BaseWithDataHookItem;
 import sama.october.QSad.hook.base.HookItemAnnotation;
 import sama.october.QSad.utils.data.DataUtils;
 import sama.october.QSad.utils.reflect.FieldUtils;
+import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 @HookItemAnnotation(TAG = "显示消息时间", desc = "显示消息发送时间，点击可设置时间格式及颜色")
 public final class MsgTimeHook extends BaseWithDataHookItem {
@@ -161,7 +162,7 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
             mConfirmedColor = mCurrentColor;
             mConfirmedFormat = mCurrentFormat;
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(context, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT)
+            AlertDialog.Builder builder = new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                     .setTitle("时间格式设置")
                     .setView(dialogView)
                     .setPositiveButton("确认", null)

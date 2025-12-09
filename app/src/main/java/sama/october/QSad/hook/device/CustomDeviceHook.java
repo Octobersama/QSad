@@ -1,6 +1,5 @@
 package sama.october.QSad.hook.device;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.View;
@@ -14,6 +13,8 @@ import sama.october.QSad.utils.hook.HookUtils;
 import sama.october.QSad.utils.qq.HostInfo;
 import sama.october.QSad.utils.reflect.ClassUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
+import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 @HookItemAnnotation(TAG = "伪装设备在线状态", desc = "点击设置机型，可用于设置在线状态机型（包含文字可能无效，重启生效）", TargetProcess = "All")
 public final class CustomDeviceHook extends BaseWithDataHookItem {
@@ -46,7 +47,7 @@ public final class CustomDeviceHook extends BaseWithDataHookItem {
             editText.setText(mFakeModel);
         }
 
-        new AlertDialog.Builder(context, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT)
+        new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                 .setTitle("设备信息")
                 .setView(editText)
                 .setPositiveButton("确定", (dialogInterface, i) -> mFakeModel = editText.getText().toString())

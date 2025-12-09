@@ -1,6 +1,5 @@
 package sama.october.QSad.hook.social;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +18,8 @@ import sama.october.QSad.utils.qq.EnableInfo;
 import sama.october.QSad.utils.qq.MsgTool;
 import sama.october.QSad.utils.thread.LoopHolder;
 import sama.october.QSad.utils.ui.EnableDialog;
+import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 @HookItemAnnotation(TAG = "自动续火", desc = "点击选择聊天和设置消息，支持图文消息（见脚本开发文档）")
 public final class AutoKeepSparkHook extends BaseWithDataHookItem {
@@ -104,7 +105,7 @@ public final class AutoKeepSparkHook extends BaseWithDataHookItem {
         TextView friendButton = parent.findViewById(R.id.keepspark_friend);
         troopButton.setOnClickListener(view -> new EnableDialog(context, mTroopEnableInfo).show());
         friendButton.setOnClickListener(view -> new EnableDialog(context, mFriendEnableInfo).show());
-        new AlertDialog.Builder(context, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT)
+        new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                 .setTitle("续火设置")
                 .setView(parent)
                 .setOnCancelListener(view -> msg = msgEditText.getText().toString())

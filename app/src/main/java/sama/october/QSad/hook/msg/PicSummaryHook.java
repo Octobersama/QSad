@@ -1,6 +1,7 @@
 package sama.october.QSad.hook.msg;
 
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.View;
@@ -104,7 +105,7 @@ public final class PicSummaryHook extends BaseWithDataHookItem {
         linearLayout.addView(keyText);
         linearLayout.addView(summaryText);
 
-        new AlertDialog.Builder(context, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT)
+        new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                 .setTitle("设置图片外显文本")
                 .setView(linearLayout)
                 .setPositiveButton("保存", (dialog, which) -> {

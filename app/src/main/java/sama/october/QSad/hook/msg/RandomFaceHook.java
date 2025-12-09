@@ -1,7 +1,5 @@
 package sama.october.QSad.hook.msg;
 
-import android.app.AlertDialog;
-
 import org.json.JSONObject;
 
 import java.lang.reflect.Method;
@@ -144,7 +142,7 @@ public final class RandomFaceHook extends BaseSwitchHookItem {
             }
 
             SyncUtils.postDelayed(() ->
-                    new AlertDialog.Builder(QQCurrentEnv.getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_LIGHT)
+                    new com.google.android.material.dialog.MaterialAlertDialogBuilder(QQCurrentEnv.getActivity(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                             .setTitle(title)
                             .setSingleChoiceItems(values, -1, (dialog, which) -> {
                                 ToastUtils.QQToast(2, values[which]);
