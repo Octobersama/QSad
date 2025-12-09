@@ -1,6 +1,8 @@
 package sama.october.QSad.hook.device;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.EditText;
@@ -11,6 +13,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.reflect.Method;
 
+import sama.october.QSad.activity.ModuleComponentActivity;
 import sama.october.QSad.hook.base.BaseWithDataHookItem;
 import sama.october.QSad.hook.base.HookItemAnnotation;
 import sama.october.QSad.utils.hook.HookUtils;
@@ -43,17 +46,54 @@ public final class CustomDeviceHook extends BaseWithDataHookItem {
     @Override
     public void onClick(View v) {
         Context context = v.getContext();
-        TextInputLayout layout = new TextInputLayout(context);
-        layout.setHint("伪装设备信息");
-        TextInputEditText editText = new TextInputEditText(context);
-        editText.setText(mFakeModel);
-        layout.addView(editText);
+        if (isHostPackage(context)) {
+            EditText editText = new EditText(context);
+            editText.setText(mFakeModel);
+            editText.setHint("伪装设备信息");
 
-        new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
-                .setTitle("设备信息")
-                .setView(layout)
-                .setPositiveButton("确定", (dialogInterface, i) -> mFakeModel = editText.getText() == null ? "" : editText.getText().toString())
-                .show();
+            new AlertDialog.Builder(context)
+                    .setTitle("设备信息")
+                    .setView(editText)
+                    .setPositiveButton("确定", (dialogInterface, i) -> mFakeModel = editText.getText() == null ? "" : editText.getText().toString())
+                    .setNegativeButton("取消", null)
+                    .show();
+        } else {
+            TextInputLayout layout = new TextInputLayout(context);
+            layout.setHint("伪装设备信息");
+            TextInputEditText editText = new TextInputEditText(context);
+            editText.setText(mFakeModel);
+            layout.addView(editText);
+
+            new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+                    .setTitle("设备信息")
+                    .setView(layout)
+                    .setPositiveButton("确定", (dialogInterface, i) -> mFakeModel = editText.getText() == null ? "" : editText.getText().toString())
+                    .setNegativeButton("取消", null)
+                    .show();
+        }
+    }
+
+    private boolean isHostPackage(Context context) {
+        if (isModuleUiContext(context)) {
+            return false;
+        }
+        String pkg = context.getApplicationContext().getPackageName();
+        return "com.tencent.mobileqq".equals(pkg) || "com.tencent.tim".equals(pkg);
+    }
+
+    private boolean isModuleUiContext(Context context) {
+        Context current = context;
+        while (current instanceof ContextWrapper) {
+            if (current instanceof ModuleComponentActivity) {
+                return true;
+            }
+            Context base = ((ContextWrapper) current).getBaseContext();
+            if (base == current) {
+                break;
+            }
+            current = base;
+        }
+        return false;
     }
 
     @Override

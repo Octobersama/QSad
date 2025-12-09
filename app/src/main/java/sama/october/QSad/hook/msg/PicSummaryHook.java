@@ -1,6 +1,8 @@
 package sama.october.QSad.hook.msg;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -22,6 +24,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import sama.october.QSad.activity.ModuleComponentActivity;
 import sama.october.QSad.hook.api.OnSendMsg;
 import sama.october.QSad.hook.base.BaseWithDataHookItem;
 import sama.october.QSad.hook.base.HookItemAnnotation;
@@ -93,35 +96,95 @@ public final class PicSummaryHook extends BaseWithDataHookItem {
     @Override
     public void onClick(View v) {
         Context context = v.getContext();
-        LinearLayout linearLayout = new LinearLayout(context);
-        int padding = (int) (context.getResources().getDisplayMetrics().density * 16);
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
-        linearLayout.setPadding(padding, padding, padding, padding);
+        if (isHostPackage(context)) {
+            LinearLayout linearLayout = new LinearLayout(context);
+            int padding = (int) (context.getResources().getDisplayMetrics().density * 16);
+            linearLayout.setOrientation(LinearLayout.VERTICAL);
+            linearLayout.setPadding(padding, padding, padding, padding);
 
-        TextInputLayout keyLayout = new TextInputLayout(context);
-        keyLayout.setHint("需要显示的 key");
-        TextInputEditText keyText = new TextInputEditText(context);
-        keyText.setText(dataMap.get("key"));
-        keyLayout.addView(keyText);
+            TextView keyLabel = new TextView(context);
+            keyLabel.setText("需要显示的 key");
+            linearLayout.addView(keyLabel);
 
-        TextInputLayout summaryLayout = new TextInputLayout(context);
-        summaryLayout.setHint("普通外显或 api 链接");
-        TextInputEditText summaryText = new TextInputEditText(context);
-        summaryText.setText(dataMap.get("summaryOrUrl"));
-        summaryLayout.addView(summaryText);
+            EditText keyText = new EditText(context);
+            keyText.setText(dataMap.get("key"));
+            linearLayout.addView(keyText);
 
-        linearLayout.addView(keyLayout);
-        linearLayout.addView(summaryLayout);
+            TextView summaryLabel = new TextView(context);
+            summaryLabel.setText("普通外显或 api 链接");
+            LinearLayout.LayoutParams summaryParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            summaryParams.topMargin = padding / 2;
+            linearLayout.addView(summaryLabel, summaryParams);
 
-        new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
-                .setTitle("设置图片外显文本")
-                .setView(linearLayout)
-                .setPositiveButton("保存", (dialog, which) -> {
-                    dataMap.put("key", keyText.getText() == null ? "" : keyText.getText().toString());
-                    dataMap.put("summaryOrUrl", summaryText.getText() == null ? "" : summaryText.getText().toString());
-                    setNextPicSummary();
-                })
-                .show();
+            EditText summaryText = new EditText(context);
+            summaryText.setText(dataMap.get("summaryOrUrl"));
+            linearLayout.addView(summaryText);
+
+            new AlertDialog.Builder(context)
+                    .setTitle("设置图片外显文本")
+                    .setView(linearLayout)
+                    .setPositiveButton("保存", (dialog, which) -> {
+                        dataMap.put("key", keyText.getText() == null ? "" : keyText.getText().toString());
+                        dataMap.put("summaryOrUrl", summaryText.getText() == null ? "" : summaryText.getText().toString());
+                        setNextPicSummary();
+                    })
+                    .setNegativeButton("取消", null)
+                    .show();
+        } else {
+            LinearLayout linearLayout = new LinearLayout(context);
+            int padding = (int) (context.getResources().getDisplayMetrics().density * 16);
+            linearLayout.setOrientation(LinearLayout.VERTICAL);
+            linearLayout.setPadding(padding, padding, padding, padding);
+
+            TextInputLayout keyLayout = new TextInputLayout(context);
+            keyLayout.setHint("需要显示的 key");
+            TextInputEditText keyText = new TextInputEditText(context);
+            keyText.setText(dataMap.get("key"));
+            keyLayout.addView(keyText);
+
+            TextInputLayout summaryLayout = new TextInputLayout(context);
+            summaryLayout.setHint("普通外显或 api 链接");
+            TextInputEditText summaryText = new TextInputEditText(context);
+            summaryText.setText(dataMap.get("summaryOrUrl"));
+            summaryLayout.addView(summaryText);
+
+            linearLayout.addView(keyLayout);
+            linearLayout.addView(summaryLayout);
+
+            new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+                    .setTitle("设置图片外显文本")
+                    .setView(linearLayout)
+                    .setPositiveButton("保存", (dialog, which) -> {
+                        dataMap.put("key", keyText.getText() == null ? "" : keyText.getText().toString());
+                        dataMap.put("summaryOrUrl", summaryText.getText() == null ? "" : summaryText.getText().toString());
+                        setNextPicSummary();
+                    })
+                    .show();
+        }
+    }
+
+    private boolean isHostPackage(Context context) {
+        if (isModuleUiContext(context)) {
+            return false;
+        }
+        String pkg = context.getApplicationContext().getPackageName();
+        return "com.tencent.mobileqq".equals(pkg) || "com.tencent.tim".equals(pkg);
+    }
+
+    private boolean isModuleUiContext(Context context) {
+        Context current = context;
+        while (current instanceof ContextWrapper) {
+            if (current instanceof ModuleComponentActivity) {
+                return true;
+            }
+            Context base = ((ContextWrapper) current).getBaseContext();
+            if (base == current) {
+                break;
+            }
+            current = base;
+        }
+        return false;
     }
 
     private void setNextPicSummary() {

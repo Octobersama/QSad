@@ -1,8 +1,10 @@
 package sama.october.QSad.hook.social;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ContextWrapper;
 import android.widget.TextView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +12,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import sama.october.QSad.R;
+import sama.october.QSad.activity.ModuleComponentActivity;
 import sama.october.QSad.hook.base.BaseWithDataHookItem;
 import sama.october.QSad.hook.base.HookItemAnnotation;
 import sama.october.QSad.utils.alarm.DailyAlarmHelper;
@@ -19,7 +24,6 @@ import sama.october.QSad.utils.qq.EnableInfo;
 import sama.october.QSad.utils.qq.MsgTool;
 import sama.october.QSad.utils.thread.LoopHolder;
 import sama.october.QSad.utils.ui.EnableDialog;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 @HookItemAnnotation(TAG = "自动续火", desc = "点击选择聊天和设置消息，支持图文消息（见脚本开发文档）")
 public final class AutoKeepSparkHook extends BaseWithDataHookItem {
@@ -98,19 +102,83 @@ public final class AutoKeepSparkHook extends BaseWithDataHookItem {
 
         mTroopEnableInfo.updateInfo();
         mFriendEnableInfo.updateInfo();
-        LinearLayout parent = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.keepsparkview, null);
-        EditText msgEditText = parent.findViewById(R.id.keepspark_msg);
-        msgEditText.setText(msg);
-        TextView troopButton = parent.findViewById(R.id.keepspark_troop);
-        TextView friendButton = parent.findViewById(R.id.keepspark_friend);
-        troopButton.setOnClickListener(view -> new EnableDialog(context, mTroopEnableInfo).show());
-        friendButton.setOnClickListener(view -> new EnableDialog(context, mFriendEnableInfo).show());
+        if (isHostPackage(context)) {
+            float density = context.getResources().getDisplayMetrics().density;
+            int padding = (int) (density * 16);
+            LinearLayout parent = new LinearLayout(context);
+            parent.setOrientation(LinearLayout.VERTICAL);
+            parent.setPadding(padding, padding, padding, padding);
 
-        new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
-                .setTitle("续火设置")
-                .setView(parent)
-                .setOnCancelListener(view -> msg = msgEditText.getText().toString())
-                .show();
+            EditText msgEditText = new EditText(context);
+            msgEditText.setHint("续火消息内容");
+            msgEditText.setText(msg);
+            parent.addView(msgEditText);
+
+            LinearLayout buttonRow = new LinearLayout(context);
+            buttonRow.setOrientation(LinearLayout.VERTICAL);
+            buttonRow.setPadding(0, padding / 2, 0, 0);
+
+            Button friendButton = new Button(context);
+            friendButton.setText("设置续火好友");
+            friendButton.setOnClickListener(view -> new EnableDialog(context, mFriendEnableInfo).show());
+            buttonRow.addView(friendButton);
+
+            Button troopButton = new Button(context);
+            troopButton.setText("设置续火群聊");
+            troopButton.setOnClickListener(view -> new EnableDialog(context, mTroopEnableInfo).show());
+            LinearLayout.LayoutParams troopParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            troopParams.topMargin = padding / 4;
+            buttonRow.addView(troopButton, troopParams);
+
+            parent.addView(buttonRow);
+
+            AlertDialog dialog = new AlertDialog.Builder(context)
+                    .setTitle("续火设置")
+                    .setView(parent)
+                    .setPositiveButton("确定", (d, w) -> msg = msgEditText.getText().toString())
+                    .setNegativeButton("取消", null)
+                    .create();
+            dialog.setOnDismissListener(d -> msg = msgEditText.getText().toString());
+            dialog.show();
+        } else {
+            LinearLayout parent = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.keepsparkview, null);
+            EditText msgEditText = parent.findViewById(R.id.keepspark_msg);
+            msgEditText.setText(msg);
+            TextView troopButton = parent.findViewById(R.id.keepspark_troop);
+            TextView friendButton = parent.findViewById(R.id.keepspark_friend);
+            troopButton.setOnClickListener(view -> new EnableDialog(context, mTroopEnableInfo).show());
+            friendButton.setOnClickListener(view -> new EnableDialog(context, mFriendEnableInfo).show());
+
+            new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+                    .setTitle("续火设置")
+                    .setView(parent)
+                    .setOnCancelListener(view -> msg = msgEditText.getText().toString())
+                    .show();
+        }
+    }
+
+    private boolean isHostPackage(Context context) {
+        if (isModuleUiContext(context)) {
+            return false;
+        }
+        String pkg = context.getApplicationContext().getPackageName();
+        return "com.tencent.mobileqq".equals(pkg) || "com.tencent.tim".equals(pkg);
+    }
+
+    private boolean isModuleUiContext(Context context) {
+        Context current = context;
+        while (current instanceof ContextWrapper) {
+            if (current instanceof ModuleComponentActivity) {
+                return true;
+            }
+            Context base = ((ContextWrapper) current).getBaseContext();
+            if (base == current) {
+                break;
+            }
+            current = base;
+        }
+        return false;
     }
 
     private void startLoop() {

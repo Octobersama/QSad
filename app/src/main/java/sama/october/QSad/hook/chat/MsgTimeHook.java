@@ -1,7 +1,6 @@
 package sama.october.QSad.hook.chat;
 
 import android.app.AlertDialog;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.Editable;
@@ -139,22 +138,46 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
     }
 
     private class TimeFormatDialog {
-        private final boolean mUseHostStyle;
-        private final android.app.AlertDialog mHostDialog;
-        private final androidx.appcompat.app.AlertDialog mDialog;
-        private final EditText mColorInput;
-        private final EditText mFormatInput;
-        private final TextView mPreviewText;
-        private final TextView mErrorText;
+        private final boolean mUseSystemDialog;
+        private final android.app.AlertDialog mSystemDialog;
+        private final androidx.appcompat.app.AlertDialog mMaterialDialog;
+        private EditText mColorInput;
+        private EditText mFormatInput;
+        private TextView mPreviewText;
+        private TextView mErrorText;
         private Button mPositiveButton;
         private int mConfirmedColor;
         private String mConfirmedFormat;
 
         public TimeFormatDialog(Context context) {
-            mUseHostStyle = context.getPackageName() != null && context.getPackageName().contains("com.tencent.mobileqq");
-            View dialogView;
+            androidx.appcompat.app.AlertDialog materialDialog = null;
+            View dialogView = null;
+            boolean materialReady = false;
 
-            if (mUseHostStyle) {
+            try {
+                LayoutInflater inflater = LayoutInflater.from(context);
+                dialogView = inflater.inflate(R.layout.dialog_time_format, null);
+                mColorInput = dialogView.findViewById(R.id.et_color);
+                mFormatInput = dialogView.findViewById(R.id.et_format);
+                mPreviewText = dialogView.findViewById(R.id.tv_preview);
+                mErrorText = dialogView.findViewById(R.id.tv_error);
+
+                materialDialog = new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+                        .setTitle("时间格式设置")
+                        .setView(dialogView)
+                        .setPositiveButton("确认", null)
+                        .setNegativeButton("取消", null)
+                        .create();
+                materialReady = true;
+            } catch (Throwable ignored) {
+                materialReady = false;
+            }
+
+            if (materialReady && materialDialog != null && dialogView != null) {
+                mUseSystemDialog = false;
+                mMaterialDialog = materialDialog;
+                mSystemDialog = null;
+            } else {
                 float density = context.getResources().getDisplayMetrics().density;
                 int padding = (int) (density * 16);
                 LinearLayout container = new LinearLayout(context);
@@ -165,8 +188,9 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
                 colorLabel.setText("ARGB 颜色代码");
                 container.addView(colorLabel);
 
-                mColorInput = new EditText(context);
-                container.addView(mColorInput);
+                EditText colorInput = new EditText(context);
+                mColorInput = colorInput;
+                container.addView(colorInput);
 
                 TextView formatLabel = new TextView(context);
                 formatLabel.setText("时间格式");
@@ -175,47 +199,35 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
                 formatParams.topMargin = padding / 2;
                 container.addView(formatLabel, formatParams);
 
-                mFormatInput = new EditText(context);
-                container.addView(mFormatInput);
+                EditText formatInput = new EditText(context);
+                mFormatInput = formatInput;
+                container.addView(formatInput);
 
-                mErrorText = new TextView(context);
-                mErrorText.setVisibility(View.GONE);
+                TextView errorText = new TextView(context);
+                mErrorText = errorText;
+                errorText.setVisibility(View.GONE);
                 LinearLayout.LayoutParams errParams = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 errParams.topMargin = padding / 2;
-                container.addView(mErrorText, errParams);
+                container.addView(errorText, errParams);
 
-                mPreviewText = new TextView(context);
-                mPreviewText.setGravity(Gravity.CENTER);
-                mPreviewText.setPadding(padding / 2, padding / 2, padding / 2, padding / 2);
+                TextView previewText = new TextView(context);
+                mPreviewText = previewText;
+                previewText.setGravity(Gravity.CENTER);
+                previewText.setPadding(padding / 2, padding / 2, padding / 2, padding / 2);
                 LinearLayout.LayoutParams previewParams = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 previewParams.topMargin = padding / 2;
-                container.addView(mPreviewText, previewParams);
+                container.addView(previewText, previewParams);
 
-                dialogView = container;
-                mHostDialog = new AlertDialog.Builder(context)
+                mSystemDialog = new AlertDialog.Builder(context)
                         .setTitle("时间格式设置")
-                        .setView(dialogView)
+                        .setView(container)
                         .setPositiveButton("确认", null)
                         .setNegativeButton("取消", null)
                         .create();
-                mDialog = null;
-            } else {
-                LayoutInflater inflater = LayoutInflater.from(context);
-                dialogView = inflater.inflate(R.layout.dialog_time_format, null);
-                mColorInput = dialogView.findViewById(R.id.et_color);
-                mFormatInput = dialogView.findViewById(R.id.et_format);
-                mPreviewText = dialogView.findViewById(R.id.tv_preview);
-                mErrorText = dialogView.findViewById(R.id.tv_error);
-
-                mDialog = new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
-                        .setTitle("时间格式设置")
-                        .setView(dialogView)
-                        .setPositiveButton("确认", null)
-                        .setNegativeButton("取消", null)
-                        .create();
-                mHostDialog = null;
+                mMaterialDialog = null;
+                mUseSystemDialog = true;
             }
 
             mColorInput.setText(colorToHex(mCurrentColor));
@@ -226,23 +238,23 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
             mConfirmedColor = mCurrentColor;
             mConfirmedFormat = mCurrentFormat;
 
-            if (mUseHostStyle && mHostDialog != null) {
-                mHostDialog.setOnShowListener(dialogInterface -> {
-                    mPositiveButton = mHostDialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE);
-                    Button negativeButton = mHostDialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE);
+            if (mUseSystemDialog && mSystemDialog != null) {
+                mSystemDialog.setOnShowListener(dialogInterface -> {
+                    mPositiveButton = mSystemDialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE);
+                    Button negativeButton = mSystemDialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE);
                     attachListeners(negativeButton);
                 });
-                mHostDialog.setOnCancelListener(dialogInterface -> {
+                mSystemDialog.setOnCancelListener(dialogInterface -> {
                     mCurrentColor = mConfirmedColor;
                     mCurrentFormat = mConfirmedFormat;
                 });
-            } else if (mDialog != null) {
-                mDialog.setOnShowListener(dialogInterface -> {
-                    mPositiveButton = mDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                    Button negativeButton = mDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+            } else if (mMaterialDialog != null) {
+                mMaterialDialog.setOnShowListener(dialogInterface -> {
+                    mPositiveButton = mMaterialDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                    Button negativeButton = mMaterialDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
                     attachListeners(negativeButton);
                 });
-                mDialog.setOnCancelListener(dialogInterface -> {
+                mMaterialDialog.setOnCancelListener(dialogInterface -> {
                     mCurrentColor = mConfirmedColor;
                     mCurrentFormat = mConfirmedFormat;
                 });
@@ -275,13 +287,13 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
                         mConfirmedFormat = mFormatInput.getText().toString();
                         mCurrentColor = mConfirmedColor;
                         mCurrentFormat = mConfirmedFormat;
-                        if (mUseHostStyle && mHostDialog != null) {
-                            mHostDialog.dismiss();
-                        } else if (mDialog != null) {
-                            mDialog.dismiss();
+                        if (mUseSystemDialog && mSystemDialog != null) {
+                            mSystemDialog.dismiss();
+                        } else if (mMaterialDialog != null) {
+                            mMaterialDialog.dismiss();
                         }
                     } catch (Exception e) {
-                        mErrorText.setText("处理输入时出错: " + e.getMessage());
+                        mErrorText.setText("处理输入时出错 " + e.getMessage());
                         mErrorText.setVisibility(View.VISIBLE);
                     }
                 }
@@ -290,19 +302,19 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
             negativeButton.setOnClickListener(v -> {
                 mCurrentColor = mConfirmedColor;
                 mCurrentFormat = mConfirmedFormat;
-                if (mUseHostStyle && mHostDialog != null) {
-                    mHostDialog.dismiss();
-                } else if (mDialog != null) {
-                    mDialog.dismiss();
+                if (mUseSystemDialog && mSystemDialog != null) {
+                    mSystemDialog.dismiss();
+                } else if (mMaterialDialog != null) {
+                    mMaterialDialog.dismiss();
                 }
             });
         }
 
         public void show() {
-            if (mUseHostStyle && mHostDialog != null) {
-                mHostDialog.show();
-            } else if (mDialog != null) {
-                mDialog.show();
+            if (mUseSystemDialog && mSystemDialog != null) {
+                mSystemDialog.show();
+            } else if (mMaterialDialog != null) {
+                mMaterialDialog.show();
             }
         }
 
