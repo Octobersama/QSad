@@ -1,13 +1,13 @@
 package sama.october.QSad.hook.device;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.ContextThemeWrapper;
 import android.view.View;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.lang.reflect.Method;
 
@@ -42,19 +42,29 @@ public final class CustomDeviceHook extends BaseWithDataHookItem {
 
     @Override
     public void onClick(View v) {
-        Context context = v.getContext();
-        Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
+        Context baseContext = v.getContext();
+        Context dialogContext = new ContextThemeWrapper(baseContext, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
 
-        TextInputLayout layout = new TextInputLayout(themed);
-        layout.setHint("伪装设备信息");
-        TextInputEditText editText = new TextInputEditText(themed);
+        int padding = (int) (dialogContext.getResources().getDisplayMetrics().density * 16);
+        LinearLayout container = new LinearLayout(dialogContext);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setPadding(padding, padding, padding, padding);
+
+        TextView label = new TextView(dialogContext);
+        label.setText("伪装设备信息");
+        label.setTextSize(14);
+        container.addView(label);
+
+        EditText editText = new EditText(dialogContext);
+        editText.setHint("例如：MI 13 / Pixel");
         editText.setText(mFakeModel);
-        layout.addView(editText);
+        container.addView(editText);
 
-        new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+        new AlertDialog.Builder(dialogContext)
                 .setTitle("设备信息")
-                .setView(layout)
+                .setView(container)
                 .setPositiveButton("确定", (dialogInterface, i) -> mFakeModel = editText.getText() == null ? "" : editText.getText().toString())
+                .setNegativeButton("取消", null)
                 .show();
     }
 

@@ -1,5 +1,6 @@
 package sama.october.QSad.hook.chat;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.Editable;
@@ -12,10 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AlertDialog;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -134,7 +131,7 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
         } else if (cleanColor.length() == 8) {
             return Color.parseColor("#" + cleanColor);
         } else {
-            throw new IllegalArgumentException("必须是6位或8位十六进制值");
+            throw new IllegalArgumentException("必须是6位或8位十六进制数");
         }
     }
 
@@ -149,7 +146,8 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
         private String mConfirmedFormat;
 
         public TimeFormatDialog(Context context) {
-            LayoutInflater inflater = LayoutInflater.from(context);
+            Context dialogContext = new ContextThemeWrapper(context, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
+            LayoutInflater inflater = LayoutInflater.from(dialogContext);
             View dialogView = inflater.inflate(R.layout.dialog_time_format, null);
 
             mColorInput = dialogView.findViewById(R.id.et_color);
@@ -165,8 +163,7 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
             mConfirmedColor = mCurrentColor;
             mConfirmedFormat = mCurrentFormat;
 
-            Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
-            AlertDialog.Builder builder = new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+            AlertDialog.Builder builder = new AlertDialog.Builder(dialogContext)
                     .setTitle("时间格式设置")
                     .setView(dialogView)
                     .setPositiveButton("确认", null)

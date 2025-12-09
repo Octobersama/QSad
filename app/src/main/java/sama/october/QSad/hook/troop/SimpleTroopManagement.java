@@ -1,7 +1,9 @@
 package sama.october.QSad.hook.troop;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +12,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.view.ContextThemeWrapper;
 
 import java.lang.reflect.Method;
 
@@ -29,7 +30,6 @@ import sama.october.QSad.utils.qq.TroopTool;
 import sama.october.QSad.utils.reflect.ClassUtils;
 import sama.october.QSad.utils.reflect.FieldUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
-import androidx.appcompat.app.AlertDialog;
 
 @HookItemAnnotation(TAG = "简洁群管", desc = "点击群聊头像开启菜单，省去进入主页管理群员")
 public final class SimpleTroopManagement extends BaseSwitchHookItem {
@@ -93,7 +93,6 @@ public final class SimpleTroopManagement extends BaseSwitchHookItem {
 
     private void setOnClickListener(LinearLayout parent, PopupWindow popupWindow,
                                     XC_MethodHook.MethodHookParam param, MsgData msgData, Context baseContext) {
-        final Context context = baseContext;
         final Context dialogContext = new ContextThemeWrapper(baseContext, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
         String troopNick = TroopTool.getMemberName(msgData.peerUin, msgData.userUin);
 
