@@ -7,8 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.view.ContextThemeWrapper;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -45,7 +46,6 @@ import sama.october.QSad.utils.reflect.FieldUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
 import sama.october.QSad.utils.thread.SyncUtils;
 import sama.october.QSad.utils.ui.EnableDialog;
-import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 @HookItemAnnotation(TAG = "自动抢红包", desc = "点击可设置一些参数")
@@ -154,24 +154,25 @@ public final class RedPacketHook extends BaseWithDataHookItem {
     public void onClick(View view) {
         final Context context = view.getContext();
         this.mTroopEnableInfo.updateInfo();
-        LinearLayout linearLayout = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.redpacketmenu, (ViewGroup) null);
-        LinearLayout whitelistGroupButton = linearLayout.findViewById(R.id.whitelistGroupButton);
+        Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
+        LinearLayout linearLayout = (LinearLayout) LayoutInflater.from(themed).inflate(R.layout.redpacketmenu, (ViewGroup) null);
+        MaterialButton whitelistGroupButton = linearLayout.findViewById(R.id.whitelistGroupButton);
         final EditText averageEditText = linearLayout.findViewById(R.id.averageEditText);
         final EditText keywordEditText = linearLayout.findViewById(R.id.keywordEditText);
         final EditText replyEditText = linearLayout.findViewById(R.id.replyEditText);
         final EditText delayEditText = linearLayout.findViewById(R.id.delayEditText);
-        final Switch averageSwitch = linearLayout.findViewById(R.id.averageSwitch);
-        final Switch keywordSwitch = linearLayout.findViewById(R.id.keywordSwitch);
-        final Switch replySwitch = linearLayout.findViewById(R.id.replySwitch);
-        final Switch delaySwitch = linearLayout.findViewById(R.id.delaySwitch);
-        final Switch autoSwitch = linearLayout.findViewById(R.id.autoSwitch);
-        final Switch manualSwitch = linearLayout.findViewById(R.id.manualSwitch);
-        final Switch aggressiveSwitch = linearLayout.findViewById(R.id.aggressiveSwitch);
+        final MaterialSwitch averageSwitch = linearLayout.findViewById(R.id.averageSwitch);
+        final MaterialSwitch keywordSwitch = linearLayout.findViewById(R.id.keywordSwitch);
+        final MaterialSwitch replySwitch = linearLayout.findViewById(R.id.replySwitch);
+        final MaterialSwitch delaySwitch = linearLayout.findViewById(R.id.delaySwitch);
+        final MaterialSwitch autoSwitch = linearLayout.findViewById(R.id.autoSwitch);
+        final MaterialSwitch manualSwitch = linearLayout.findViewById(R.id.manualSwitch);
+        final MaterialSwitch aggressiveSwitch = linearLayout.findViewById(R.id.aggressiveSwitch);
 
         whitelistGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new EnableDialog(context, mTroopEnableInfo).show();
+                new EnableDialog(themed, mTroopEnableInfo).show();
             }
         });
 
@@ -187,7 +188,6 @@ public final class RedPacketHook extends BaseWithDataHookItem {
         keywordEditText.setText(listToCommaSeparatedString((List<String>) this.autoGrabHbConfig.getValue("keywords")));
         replyEditText.setText(listToCommaSeparatedString((List<String>) this.autoGrabHbConfig.getValue("replys")));
 
-        Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
         new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog).setTitle("设置参数").setView(linearLayout).setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {

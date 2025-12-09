@@ -30,7 +30,6 @@ import sama.october.QSad.utils.reflect.ClassUtils;
 import sama.october.QSad.utils.reflect.FieldUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
 import androidx.appcompat.app.AlertDialog;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 @HookItemAnnotation(TAG = "简洁群管", desc = "点击群聊头像开启菜单，省去进入主页管理群员")
 public final class SimpleTroopManagement extends BaseSwitchHookItem {
@@ -68,12 +67,12 @@ public final class SimpleTroopManagement extends BaseSwitchHookItem {
 
             Context context = view.getContext();
             LinearLayout managementLayout = (LinearLayout) LayoutInflater.from(context)
-                    .inflate(R.layout.troopmanagement, null);
+                    .inflate(R.layout.troopmanagement_simple, null);
             View anchorView = ((Activity) context).getWindow().getDecorView();
             PopupWindow popupWindow = new PopupWindow(managementLayout,
                     ViewGroup.LayoutParams.MATCH_PARENT, anchorView.getHeight() / 2, true);
 
-            setOnClickListener(managementLayout, popupWindow, param, msgData);
+            setOnClickListener(managementLayout, popupWindow, param, msgData, context);
             popupWindow.showAtLocation(anchorView, Gravity.BOTTOM, 0, 0);
 
             return null;
@@ -93,8 +92,9 @@ public final class SimpleTroopManagement extends BaseSwitchHookItem {
     }
 
     private void setOnClickListener(LinearLayout parent, PopupWindow popupWindow,
-                                    XC_MethodHook.MethodHookParam param, MsgData msgData) {
-        final Context context = parent.getContext();
+                                    XC_MethodHook.MethodHookParam param, MsgData msgData, Context baseContext) {
+        final Context context = baseContext;
+        final Context dialogContext = new ContextThemeWrapper(baseContext, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
         String troopNick = TroopTool.getMemberName(msgData.peerUin, msgData.userUin);
 
         ((TextView) parent.findViewById(R.id.troopmanagementUinText)).setText(msgData.userUin);
@@ -141,7 +141,7 @@ public final class SimpleTroopManagement extends BaseSwitchHookItem {
         });
 
         parent.findViewById(R.id.troopmanagementButton5).setOnClickListener(v -> {
-            LinearLayout shutUpLayout = (LinearLayout) LayoutInflater.from(context)
+            LinearLayout shutUpLayout = (LinearLayout) LayoutInflater.from(dialogContext)
                     .inflate(R.layout.shutuplayout, null);
 
             final EditText etDays = shutUpLayout.findViewById(R.id.etDays);
@@ -149,8 +149,7 @@ public final class SimpleTroopManagement extends BaseSwitchHookItem {
             final EditText etMinutes = shutUpLayout.findViewById(R.id.etMinutes);
             final EditText etSeconds = shutUpLayout.findViewById(R.id.etSeconds);
 
-            Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
-            new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+            new AlertDialog.Builder(dialogContext)
                     .setView(shutUpLayout)
                     .setTitle("设置禁言时间")
                     .setPositiveButton("确定", (dialog, which) -> {
@@ -185,9 +184,8 @@ public final class SimpleTroopManagement extends BaseSwitchHookItem {
         });
 
         parent.findViewById(R.id.troopmanagementButton7).setOnClickListener(v -> {
-            final EditText editText = new EditText(context);
-            Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
-            new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+            final EditText editText = new EditText(dialogContext);
+            new AlertDialog.Builder(dialogContext)
                     .setTitle("设置头衔")
                     .setView(editText)
                     .setPositiveButton("确定", (dialog, which) -> {
@@ -202,10 +200,9 @@ public final class SimpleTroopManagement extends BaseSwitchHookItem {
         });
 
         parent.findViewById(R.id.troopmanagementButton8).setOnClickListener(v -> {
-            final EditText editText = new EditText(context);
+            final EditText editText = new EditText(dialogContext);
             editText.setText(troopNick);
-            Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
-            new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+            new AlertDialog.Builder(dialogContext)
                     .setTitle("设置群昵称")
                     .setView(editText)
                     .setNegativeButton("取消", null)

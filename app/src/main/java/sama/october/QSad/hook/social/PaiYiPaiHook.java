@@ -5,8 +5,14 @@ import android.content.Context;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.widget.EditText;
 import android.view.ContextThemeWrapper;
+import android.widget.EditText;
+
+import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.reflect.Method;
 
@@ -18,8 +24,6 @@ import sama.october.QSad.utils.hook.xpcompat.XposedBridge;
 import sama.october.QSad.utils.qq.QQCurrentEnv;
 import sama.october.QSad.utils.reflect.ClassUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
-import androidx.appcompat.app.AlertDialog;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 @HookItemAnnotation(TAG = "拍一拍连拍", desc = "双击头像后可输入次数(单日上限200)")
 public final class PaiYiPaiHook extends BaseSwitchHookItem {
@@ -62,18 +66,21 @@ public final class PaiYiPaiHook extends BaseSwitchHookItem {
     }
 
     private void showInputDialog(Activity activity, XC_MethodHook.MethodHookParam param) {
-        EditText editText = new EditText(activity);
+        Context themed = new ContextThemeWrapper(activity, sama.october.QSad.R.style.Theme_QSad_Compose);
+        TextInputLayout layout = new TextInputLayout(themed);
+        layout.setHint("连拍次数 (1-200)");
+        TextInputEditText editText = new TextInputEditText(themed);
 
         editText.setText("1");
         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
         editText.addTextChangedListener(createTextWatcher(editText));
+        layout.addView(editText);
 
-        Context themed = new ContextThemeWrapper(activity, sama.october.QSad.R.style.Theme_QSad_Compose);
         new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                 .setTitle("请输入次数")
-                .setView(editText)
+                .setView(layout)
                 .setPositiveButton("确定", (dialogInterface, which) -> {
-                    String input = editText.getText().toString();
+                    String input = editText.getText() == null ? "" : editText.getText().toString();
                     int num = input.isEmpty() ? 1 : Integer.parseInt(input);
                     sendMultiplePaiYiPai(param, num);
                 })

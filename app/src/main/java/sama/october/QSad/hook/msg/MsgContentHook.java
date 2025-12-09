@@ -1,11 +1,18 @@
 package sama.october.QSad.hook.msg;
 
 import android.content.Context;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.view.ContextThemeWrapper;
+
+import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -18,8 +25,6 @@ import sama.october.QSad.hook.base.HookItemAnnotation;
 import sama.october.QSad.utils.error.ErrorOutput;
 import sama.october.QSad.utils.qq.QQCurrentEnv;
 import sama.october.QSad.utils.reflect.FieldUtils;
-import androidx.appcompat.app.AlertDialog;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 @HookItemAnnotation(TAG = "修改本地消息文本", desc = "长按消息出现修改文本选项，滑动或重新进入聊天界面刷新")
 public final class MsgContentHook extends BaseSwitchHookItem {
@@ -95,6 +100,8 @@ public final class MsgContentHook extends BaseSwitchHookItem {
     private void showEditDialog(long msgId, Map<Integer, String> items) {
         Context context = QQCurrentEnv.getActivity();
         LinearLayout container = new LinearLayout(context);
+        int padding = (int) (context.getResources().getDisplayMetrics().density * 16);
+        container.setPadding(padding, padding, padding, padding);
         container.setOrientation(LinearLayout.VERTICAL);
 
         Integer[] keys = items.keySet().toArray(new Integer[0]);
@@ -104,6 +111,7 @@ public final class MsgContentHook extends BaseSwitchHookItem {
         if (items.isEmpty()) {
             TextView textView = new TextView(context);
             textView.setText("无可修改文本");
+            textView.setTextSize(16);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -112,9 +120,14 @@ public final class MsgContentHook extends BaseSwitchHookItem {
         }
 
         for (int i = 0; i < items.size(); i++) {
-            EditText editText = new EditText(context);
+            TextInputLayout layout = new TextInputLayout(context);
+            layout.setHint(values[i]);
+            TextInputEditText editText = new TextInputEditText(context);
             editText.setHint(values[i]);
-            container.addView(editText);
+            editText.setText(values[i]);
+            editText.setPadding(padding / 2, padding / 2, padding / 2, padding / 2);
+            layout.addView(editText);
+            container.addView(layout);
         }
 
         Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
@@ -127,10 +140,15 @@ public final class MsgContentHook extends BaseSwitchHookItem {
                     }
 
                     for (int i = 0; i < container.getChildCount(); i++) {
-                        EditText editText = (EditText) container.getChildAt(i);
-                        String text = editText.getText().toString();
-                        if (!text.isEmpty()) {
-                            result.put(keys[i], text);
+                        View child = container.getChildAt(i);
+                        if (child instanceof TextInputLayout) {
+                            EditText editText = ((TextInputLayout) child).getEditText();
+                            if (editText != null) {
+                                String text = editText.getText().toString();
+                                if (!text.isEmpty()) {
+                                    result.put(keys[i], text);
+                                }
+                            }
                         }
                     }
 

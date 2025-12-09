@@ -3,60 +3,67 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="20dp">
 
-    <!-- 颜色输入 -->
-    <TextView
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="ARGB颜色代码:" />
+        android:hint="ARGB 颜色代码">
 
-    <EditText
-        android:id="@+id/et_color"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_color"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapCharacters"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textCapCharacters"
-        android:maxLines="1" />
+        android:layout_marginTop="12dp"
+        android:hint="时间格式">
 
-    <!-- 时间格式输入 -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="时间格式:" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_format"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <EditText
-        android:id="@+id/et_format"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="text"
-        android:maxLines="1" />
-
-    <!-- 错误信息 -->
     <TextView
         android:id="@+id/tv_error"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:textColor="#FF0000"
+        android:textColor="?attr/colorError"
         android:visibility="gone" />
 
-    <!-- 预览区域 -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="预览效果:"
-        android:textStyle="bold" />
+        android:text="预览效果"
+        android:textStyle="bold"
+        android:textColor="?attr/colorOnSurfaceVariant" />
 
-    <TextView
-        android:id="@+id/tv_preview"
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="#22000000"
-        android:gravity="center"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:padding="12dp"
+        android:clickable="false"
+        android:focusable="false">
+
+        <TextView
+            android:id="@+id/tv_preview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="8dp"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.view.ContextThemeWrapper;
+
+import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,8 +29,6 @@ import sama.october.QSad.hook.base.BaseWithDataHookItem;
 import sama.october.QSad.hook.base.HookItemAnnotation;
 import sama.october.QSad.utils.data.DataUtils;
 import sama.october.QSad.utils.reflect.FieldUtils;
-import androidx.appcompat.app.AlertDialog;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 @HookItemAnnotation(TAG = "显示消息时间", desc = "显示消息发送时间，点击可设置时间格式及颜色")
 public final class MsgTimeHook extends BaseWithDataHookItem {
@@ -204,6 +206,7 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
                             mDialog.dismiss();
                         } catch (Exception e) {
                             mErrorText.setText("处理输入时出错: " + e.getMessage());
+                            mErrorText.setVisibility(View.VISIBLE);
                         }
                     }
                 });
@@ -232,35 +235,33 @@ public final class MsgTimeHook extends BaseWithDataHookItem {
             StringBuilder errorMsg = new StringBuilder();
 
             if (colorStr.isEmpty()) {
-                errorMsg.append("• 颜色不能为空\n");
+                errorMsg.append("· 颜色不能为空\n");
                 isValid = false;
             } else {
                 try {
                     int color = parseColor(colorStr);
                     mPreviewText.setTextColor(color);
                 } catch (IllegalArgumentException e) {
-                    errorMsg.append("• 颜色格式无效: ").append(e.getMessage()).append("\n");
+                    errorMsg.append("· 颜色格式无效: ").append(e.getMessage()).append("\n");
                     isValid = false;
                 }
             }
 
             if (formatStr.isEmpty()) {
-                errorMsg.append("• 时间格式不能为空");
+                errorMsg.append("· 时间格式不能为空");
                 isValid = false;
             } else {
                 try {
                     String formattedTime = new SimpleDateFormat(formatStr, Locale.getDefault()).format(new Date());
                     mPreviewText.setText(formattedTime);
                 } catch (IllegalArgumentException | NullPointerException e) {
-                    errorMsg.append("• 时间格式无效: ").append(e.getMessage());
+                    errorMsg.append("· 时间格式无效: ").append(e.getMessage());
                     isValid = false;
                 }
             }
 
             mErrorText.setText(errorMsg.toString());
             mErrorText.setVisibility(errorMsg.length() > 0 ? View.VISIBLE : View.GONE);
-            mPositiveButton.setEnabled(isValid);
-
             return isValid;
         }
     }

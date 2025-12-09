@@ -2,9 +2,12 @@ package sama.october.QSad.hook.device;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.view.View;
-import android.widget.EditText;
 import android.view.ContextThemeWrapper;
+import android.view.View;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.reflect.Method;
 
@@ -14,8 +17,6 @@ import sama.october.QSad.utils.hook.HookUtils;
 import sama.october.QSad.utils.qq.HostInfo;
 import sama.october.QSad.utils.reflect.ClassUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
-import androidx.appcompat.app.AlertDialog;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 @HookItemAnnotation(TAG = "伪装设备在线状态", desc = "点击设置机型，可用于设置在线状态机型（包含文字可能无效，重启生效）", TargetProcess = "All")
 public final class CustomDeviceHook extends BaseWithDataHookItem {
@@ -42,17 +43,18 @@ public final class CustomDeviceHook extends BaseWithDataHookItem {
     @Override
     public void onClick(View v) {
         Context context = v.getContext();
-        final EditText editText = new EditText(context);
-
-        if (mFakeModel != null) {
-            editText.setText(mFakeModel);
-        }
-
         Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
+
+        TextInputLayout layout = new TextInputLayout(themed);
+        layout.setHint("伪装设备信息");
+        TextInputEditText editText = new TextInputEditText(themed);
+        editText.setText(mFakeModel);
+        layout.addView(editText);
+
         new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                 .setTitle("设备信息")
-                .setView(editText)
-                .setPositiveButton("确定", (dialogInterface, i) -> mFakeModel = editText.getText().toString())
+                .setView(layout)
+                .setPositiveButton("确定", (dialogInterface, i) -> mFakeModel = editText.getText() == null ? "" : editText.getText().toString())
                 .show();
     }
 

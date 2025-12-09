@@ -1,14 +1,14 @@
 package sama.october.QSad.hook.msg;
 
-import androidx.appcompat.app.AlertDialog;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import android.content.Context;
-import android.view.Gravity;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.view.ContextThemeWrapper;
-import android.widget.TextView;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONObject;
 
@@ -31,14 +31,12 @@ import sama.october.QSad.utils.thread.SyncUtils;
 @HookItemAnnotation(TAG = "修改图片外显", desc = "返回值为Json格式时支持读取嵌套的key，为纯文本长度需小于30")
 public final class PicSummaryHook extends BaseWithDataHookItem {
     private Map<String, String> dataMap = new HashMap<>();
-    private String mPicSummary;
+    private String mPicSummary = "";
     private OnSendMsg.SendMsgListener mChangeSummaryListener;
 
     @Override
     protected void initCallback() {
-
         mChangeSummaryListener = msgElements -> {
-
             if (mPicSummary.isEmpty()) {
                 return;
             }
@@ -55,9 +53,11 @@ public final class PicSummaryHook extends BaseWithDataHookItem {
                 if (marketFaceElement != null) {
                     FieldUtils.create(marketFaceElement).withName("faceName").setValue(mPicSummary);
                     hasPic = true;
-                }                
+                }
             }
-            if (hasPic) setNextPicSummary();
+            if (hasPic) {
+                setNextPicSummary();
+            }
         };
     }
 
@@ -92,28 +92,32 @@ public final class PicSummaryHook extends BaseWithDataHookItem {
     public void onClick(View v) {
         Context context = v.getContext();
         LinearLayout linearLayout = new LinearLayout(context);
+        int padding = (int) (context.getResources().getDisplayMetrics().density * 16);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
-        EditText summaryText = new EditText(context);
-        EditText keyText = new EditText(context);
+        linearLayout.setPadding(padding, padding, padding, padding);
 
-        linearLayout.setGravity(Gravity.CENTER);
-        summaryText.setHint("普通外显或api链接");
-        summaryText.setText(dataMap.get("summaryOrUrl"));
-        summaryText.setPadding(40, 40, 40, 40);
-        keyText.setHint("需要显示的key");
+        TextInputLayout keyLayout = new TextInputLayout(context);
+        keyLayout.setHint("需要显示的 key");
+        TextInputEditText keyText = new TextInputEditText(context);
         keyText.setText(dataMap.get("key"));
-        keyText.setPadding(40, 40, 40, 40);
+        keyLayout.addView(keyText);
 
-        linearLayout.addView(keyText);
-        linearLayout.addView(summaryText);
+        TextInputLayout summaryLayout = new TextInputLayout(context);
+        summaryLayout.setHint("普通外显或 api 链接");
+        TextInputEditText summaryText = new TextInputEditText(context);
+        summaryText.setText(dataMap.get("summaryOrUrl"));
+        summaryLayout.addView(summaryText);
+
+        linearLayout.addView(keyLayout);
+        linearLayout.addView(summaryLayout);
 
         Context themed = new ContextThemeWrapper(context, sama.october.QSad.R.style.Theme_QSad_Compose);
         new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                 .setTitle("设置图片外显文本")
                 .setView(linearLayout)
                 .setPositiveButton("保存", (dialog, which) -> {
-                    dataMap.put("key", keyText.getText().toString());
-                    dataMap.put("summaryOrUrl", summaryText.getText().toString());
+                    dataMap.put("key", keyText.getText() == null ? "" : keyText.getText().toString());
+                    dataMap.put("summaryOrUrl", summaryText.getText() == null ? "" : summaryText.getText().toString());
                     setNextPicSummary();
                 })
                 .create()

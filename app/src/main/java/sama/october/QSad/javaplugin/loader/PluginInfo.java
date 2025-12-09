@@ -1,24 +1,23 @@
 package sama.october.QSad.javaplugin.loader;
 
 import android.app.Activity;
-import android.view.Gravity;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.PopupWindow;
-import android.widget.Switch;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import androidx.appcompat.app.AlertDialog;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import android.view.ContextThemeWrapper;
 
 import sama.october.QSad.R;
 
@@ -73,51 +72,50 @@ public class PluginInfo implements OnClickListener {
     @Override
     public void onClick(View v) {
         Activity activity = (Activity) v.getContext();
-        View dialog = LayoutInflater.from(activity).inflate(R.layout.plugininfodialog, null);
+        ContextThemeWrapper themed = new ContextThemeWrapper(activity, sama.october.QSad.R.style.Theme_QSad_Compose);
+        View dialog = LayoutInflater.from(themed).inflate(R.layout.plugininfodialog, null);
 
         TextView authorTextView = dialog.findViewById(R.id.authorTextView);
         TextView versionTextView = dialog.findViewById(R.id.versionTextView);
         TextView descTextView = dialog.findViewById(R.id.descTextView);
-        Switch autoSwitch = dialog.findViewById(R.id.autoSwitch);
+        MaterialSwitch autoSwitch = dialog.findViewById(R.id.autoSwitch);
         Button deleteButton = dialog.findViewById(R.id.deleteButton);
         Button uploadButton = dialog.findViewById(R.id.uploadButton);
 
         authorTextView.setText("作者：" + mAuthorName);
         versionTextView.setText("版本：" + mPluginVersion);
-        descTextView.setText(mDesc);
+        descTextView.setText(mDesc.isEmpty() ? "暂无描述" : mDesc);
 
-        if (PluginManager.autoLoadList.contains(pluginId)) {
-            autoSwitch.setChecked(true);
-        }
-
+        autoSwitch.setChecked(PluginManager.autoLoadList.contains(pluginId));
         autoSwitch.setOnCheckedChangeListener((view, isChecked) -> {
             if (isChecked) {
-                PluginManager.autoLoadList.add(pluginId);
+                if (!PluginManager.autoLoadList.contains(pluginId)) {
+                    PluginManager.autoLoadList.add(pluginId);
+                }
             } else {
                 PluginManager.autoLoadList.remove(pluginId);
             }
         });
 
-        View root = activity.findViewById(android.R.id.content);
-        PopupWindow popupWindow = new PopupWindow(dialog,
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setFocusable(true);
-        popupWindow.setWidth(root.getWidth() * 4 / 5);
-        popupWindow.setHeight(root.getHeight() * 4 / 7);
-        popupWindow.showAtLocation(root, Gravity.CENTER, 0, 0);
+        AlertDialog alertDialog = new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+                .setTitle(pluginName)
+                .setView(dialog)
+                .setNegativeButton("关闭", null)
+                .create();
+        alertDialog.show();
 
-        deleteButton.setOnClickListener(view -> {
-            popupWindow.dismiss();
-            ContextThemeWrapper themed = new ContextThemeWrapper(activity, sama.october.QSad.R.style.Theme_QSad_Compose);
-            new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
-                    .setNegativeButton("取消", null)
-                    .setTitle("提示")
-                    .setMessage("确认删除该脚本？")
-                    .setPositiveButton("确定", (d, w) ->
-                            PluginManager.deletePlugin(PluginInfo.this, activity))
-                    .create()
-                    .show();
+        deleteButton.setOnClickListener(view -> new MaterialAlertDialogBuilder(themed, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+                .setNegativeButton("取消", null)
+                .setTitle("提示")
+                .setMessage("确认删除该脚本？")
+                .setPositiveButton("确定", (d, w) -> {
+                    PluginManager.deletePlugin(PluginInfo.this, activity);
+                    alertDialog.dismiss();
+                })
+                .show());
+
+        // 上传按钮暂留，防止布局错乱
+        uploadButton.setOnClickListener(v1 -> {
         });
     }
 

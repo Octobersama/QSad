@@ -18,6 +18,8 @@ import sama.october.QSad.utils.reflect.ClassUtils;
 import sama.october.QSad.utils.reflect.FieldUtils;
 import sama.october.QSad.utils.reflect.MethodUtils;
 import sama.october.QSad.utils.thread.SyncUtils;
+import android.app.AlertDialog;
+import android.view.ContextThemeWrapper;
 
 @HookItemAnnotation(TAG = "自定义随机表情", desc = "使用猜拳/骰子可自定义结果")
 public final class RandomFaceHook extends BaseSwitchHookItem {
@@ -141,22 +143,24 @@ public final class RandomFaceHook extends BaseSwitchHookItem {
                     return XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
             }
 
-            SyncUtils.postDelayed(() ->
-                    new com.google.android.material.dialog.MaterialAlertDialogBuilder(new android.view.ContextThemeWrapper(QQCurrentEnv.getActivity(), sama.october.QSad.R.style.Theme_QSad_Compose), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
-                            .setTitle(title)
-                            .setSingleChoiceItems(values, -1, (dialog, which) -> {
-                                ToastUtils.QQToast(2, values[which]);
-                                String peerUid = FieldUtils.create(param.args[1]).withName("peerUid").getValue().toString();
-                                int chatType = (int) FieldUtils.create(param.args[1]).withName("chatType").getValue();
-                                try {
-                                    sendBuffer(makeBytes(faceText, which + 1, peerUid, chatType));
-                                } catch (Exception e) {
-                                    ErrorOutput.itemHookError(RandomFaceHook.this, e);
-                                }
-                                dialog.dismiss();
-                            })
-                            .create()
-                            .show(), 100);
+            SyncUtils.postDelayed(() -> {
+                ContextThemeWrapper themed = new ContextThemeWrapper(QQCurrentEnv.getActivity(), android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
+                new AlertDialog.Builder(themed)
+                        .setTitle(title)
+                        .setSingleChoiceItems(values, -1, (dialog, which) -> {
+                            ToastUtils.QQToast(2, values[which]);
+                            String peerUid = FieldUtils.create(param.args[1]).withName("peerUid").getValue().toString();
+                            int chatType = (int) FieldUtils.create(param.args[1]).withName("chatType").getValue();
+                            try {
+                                sendBuffer(makeBytes(faceText, which + 1, peerUid, chatType));
+                            } catch (Exception e) {
+                                ErrorOutput.itemHookError(RandomFaceHook.this, e);
+                            }
+                            dialog.dismiss();
+                        })
+                        .setNegativeButton("取消", (d, w) -> d.dismiss())
+                        .show();
+            }, 100);
             return null;
         });
     }

@@ -42,6 +42,8 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -238,6 +240,9 @@ private fun JavaPluginScreen(
 ) {
     val pathText = "${HostInfo.getMODULE_DATA_PATH()}${QQCurrentEnv.getCurrentUin()}/plugin/"
 
+    var selectedTab by remember { mutableStateOf(0) }
+    val tabs = listOf("本地脚本", "在线脚本")
+
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -246,80 +251,100 @@ private fun JavaPluginScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            ElevatedCard(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.elevatedCardColors()
-            ) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(text = "脚本存放目录", style = MaterialTheme.typography.titleMedium)
-                    Text(
-                        text = pathText,
-                        style = MaterialTheme.typography.bodyMedium,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+            TabRow(selectedTabIndex = selectedTab) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        selected = selectedTab == index,
+                        onClick = { selectedTab = index },
+                        text = { Text(title) }
                     )
-                    ElevatedButton(
-                        onClick = onCopyPath,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(Icons.Outlined.ContentCopy, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "复制路径")
-                    }
                 }
             }
         }
 
-        item {
-            ElevatedCard(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.elevatedCardColors()
-            ) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ElevatedButton(
-                        onClick = onImport,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(Icons.Outlined.UploadFile, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("导入插件")
-                    }
-                    ElevatedButton(
-                        onClick = {},
-                        enabled = false,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(Icons.Outlined.Folder, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("本地脚本（暂未开放）")
-                    }
-                    ElevatedButton(
-                        onClick = {},
-                        enabled = false,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(Icons.Outlined.CloudDownload, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("在线脚本（暂未开放）")
-                    }
-                    ElevatedButton(
-                        onClick = onOpenDocs,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(Icons.Outlined.Info, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("查看文档")
+        if (selectedTab == 0) {
+            item {
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.elevatedCardColors()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(text = "脚本存放目录", style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            text = pathText,
+                            style = MaterialTheme.typography.bodyMedium,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        ElevatedButton(
+                            onClick = onCopyPath,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Outlined.ContentCopy, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = "复制路径")
+                        }
                     }
                 }
             }
-        }
 
-        items(pluginList, key = { it.pluginId }) { plugin ->
-            PluginCard(
-                pluginInfo = plugin,
-                onToggle = { checked -> onTogglePlugin(plugin, checked) },
-                onClick = { onOpenDetail(plugin) }
-            )
+            item {
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.elevatedCardColors()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        ElevatedButton(
+                            onClick = onImport,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Outlined.UploadFile, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("导入插件")
+                        }
+                        ElevatedButton(
+                            onClick = onOpenDocs,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Outlined.Info, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("开发文档")
+                        }
+                    }
+                }
+            }
+
+            items(pluginList, key = { it.pluginId }) { plugin ->
+                PluginCard(
+                    pluginInfo = plugin,
+                    onToggle = { checked -> onTogglePlugin(plugin, checked) },
+                    onClick = { onOpenDetail(plugin) }
+                )
+            }
+        } else {
+            item {
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.elevatedCardColors()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(text = "在线脚本", style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            text = "在线脚本市场开发中，敬请期待。",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        ElevatedButton(
+                            onClick = onOpenDocs,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Outlined.CloudDownload, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("查看接入规范")
+                        }
+                    }
+                }
+            }
         }
     }
 }
