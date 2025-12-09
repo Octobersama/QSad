@@ -45,7 +45,7 @@ import sama.october.QSad.utils.reflect.MethodUtils;
 import sama.october.QSad.utils.thread.SyncUtils;
 import sama.october.QSad.ui.host.dialog.EnableDialog;
 
-@HookItemAnnotation(TAG = "自动抢红�?, desc = "点击可设置一些参�?)
+@HookItemAnnotation(TAG = "自动抢红包", desc = "点击可设置一些参数")
 public final class RedPacketHook extends BaseWithDataHookItem {
     public Class<?> Servlet;
     public TernaryDataList<Object> autoGrabHbConfig = new TernaryDataList<>();
@@ -126,7 +126,7 @@ public final class RedPacketHook extends BaseWithDataHookItem {
                 this.commonHbConfig.put("isManual", Boolean.FALSE);
                 this.commonHbConfig.put("isAggressive", Boolean.FALSE);
             }
-            // 确保激进模式配置存�?
+            // 确保激进模式配置存在
             if (!this.commonHbConfig.containsKey("isAggressive")) {
                 this.commonHbConfig.put("isAggressive", Boolean.FALSE);
             }
@@ -147,7 +147,7 @@ public final class RedPacketHook extends BaseWithDataHookItem {
         }
     }
 
-        @Override
+    @Override
     public void onClick(View view) {
         final Context context = view.getContext();
         this.mTroopEnableInfo.updateInfo();
@@ -167,44 +167,41 @@ public final class RedPacketHook extends BaseWithDataHookItem {
 
         whitelistGroupButton.setOnClickListener(v -> new EnableDialog(context, mTroopEnableInfo).show());
 
-        averageSwitch.setChecked(autoGrabHbConfig.getIsAvailable("average"));
-        delaySwitch.setChecked(autoGrabHbConfig.getIsAvailable("delay"));
-        keywordSwitch.setChecked(autoGrabHbConfig.getIsAvailable("keywords"));
-        replySwitch.setChecked(autoGrabHbConfig.getIsAvailable("replys"));
-        autoSwitch.setChecked(commonHbConfig.get("isAuto").booleanValue());
-        manualSwitch.setChecked(commonHbConfig.get("isManual").booleanValue());
-        aggressiveSwitch.setChecked(commonHbConfig.get("isAggressive").booleanValue());
-        averageEditText.setText(autoGrabHbConfig.getValue("average").toString());
-        delayEditText.setText(autoGrabHbConfig.getValue("delay").toString());
-        keywordEditText.setText(listToCommaSeparatedString((List<String>) autoGrabHbConfig.getValue("keywords")));
-        replyEditText.setText(listToCommaSeparatedString((List<String>) autoGrabHbConfig.getValue("replys")));
+        averageSwitch.setChecked(this.autoGrabHbConfig.getIsAvailable("average"));
+        delaySwitch.setChecked(this.autoGrabHbConfig.getIsAvailable("delay"));
+        keywordSwitch.setChecked(this.autoGrabHbConfig.getIsAvailable("keywords"));
+        replySwitch.setChecked(this.autoGrabHbConfig.getIsAvailable("replys"));
+        autoSwitch.setChecked(this.commonHbConfig.get("isAuto").booleanValue());
+        manualSwitch.setChecked(this.commonHbConfig.get("isManual").booleanValue());
+        aggressiveSwitch.setChecked(this.commonHbConfig.get("isAggressive").booleanValue());
+        averageEditText.setText(this.autoGrabHbConfig.getValue("average").toString());
+        delayEditText.setText(this.autoGrabHbConfig.getValue("delay").toString());
+        keywordEditText.setText(listToCommaSeparatedString((List<String>) this.autoGrabHbConfig.getValue("keywords")));
+        replyEditText.setText(listToCommaSeparatedString((List<String>) this.autoGrabHbConfig.getValue("replys")));
 
-        new AlertDialog.Builder(context)
-                .setTitle("���ò���")
-                .setView(dialogView)
-                .setPositiveButton("ȷ��", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        String avgText = averageEditText.getText().toString();
-                        String keywordText = keywordEditText.getText().toString();
-                        String replyText = replyEditText.getText().toString();
-                        String delayText = delayEditText.getText().toString();
-                        autoGrabHbConfig.setValue("average", Integer.valueOf(avgText.isEmpty() ? 0 : Integer.parseInt(avgText)));
-                        autoGrabHbConfig.setValue("delay", Long.valueOf(delayText.isEmpty() ? 0L : Long.parseLong(delayText)));
-                        autoGrabHbConfig.setValue("keywords", splitStringToList(keywordText));
-                        autoGrabHbConfig.setValue("replys", splitStringToList(replyText));
-                        autoGrabHbConfig.setIsAvailable("average", averageSwitch.isChecked());
-                        autoGrabHbConfig.setIsAvailable("delay", delaySwitch.isChecked());
-                        autoGrabHbConfig.setIsAvailable("keywords", keywordSwitch.isChecked());
-                        autoGrabHbConfig.setIsAvailable("replys", replySwitch.isChecked());
-                        commonHbConfig.put("isAuto", autoSwitch.isChecked());
-                        commonHbConfig.put("isManual", manualSwitch.isChecked());
-                        commonHbConfig.put("isAggressive", aggressiveSwitch.isChecked());
-                    }
-                })
-                .show();
+        new AlertDialog.Builder(context).setTitle("设置参数").setView(dialogView).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String avgText = averageEditText.getText().toString();
+                String keywordText = keywordEditText.getText().toString();
+                String replyText = replyEditText.getText().toString();
+                String delayText = delayEditText.getText().toString();
+                autoGrabHbConfig.setValue("average", Integer.valueOf(avgText.isEmpty() ? 0 : Integer.parseInt(avgText)));
+                autoGrabHbConfig.setValue("delay", Long.valueOf(delayText.isEmpty() ? 0L : Long.parseLong(delayText)));
+                autoGrabHbConfig.setValue("keywords", splitStringToList(keywordText));
+                autoGrabHbConfig.setValue("replys", splitStringToList(replyText));
+                autoGrabHbConfig.setIsAvailable("average", averageSwitch.isChecked());
+                autoGrabHbConfig.setIsAvailable("delay", delaySwitch.isChecked());
+                autoGrabHbConfig.setIsAvailable("keywords", keywordSwitch.isChecked());
+                autoGrabHbConfig.setIsAvailable("replys", replySwitch.isChecked());
+                commonHbConfig.put("isAuto", autoSwitch.isChecked());
+                commonHbConfig.put("isManual", manualSwitch.isChecked());
+                commonHbConfig.put("isAggressive", aggressiveSwitch.isChecked());
+            }
+        }).show();
     }
-private void grabHb(MsgData msgData, boolean isAuto) throws SecurityException {
+
+    private void grabHb(MsgData msgData, boolean isAuto) throws SecurityException {
         if (msgData.msgType == 10 && msgData.type == 2) {
             Object walletElement = FieldUtils.create(((ArrayList) FieldUtils.create(msgData.data).withName("elements").getValue()).get(0)).withName("walletElement").getValue();
             String title = FieldUtils.create(FieldUtils.create(walletElement).withName("receiver").getValue()).withName("title").getValue().toString();
@@ -224,7 +221,7 @@ private void grabHb(MsgData msgData, boolean isAuto) throws SecurityException {
                 return;
             }
 
-            // 检查关键词过滤（激进模式跳过）
+            // 检查关键字过滤（激进模式跳过）
             if (!isAggressive) {
                 String matchedKeywords = "";
                 boolean hasKeyword = false;
@@ -310,7 +307,7 @@ private void grabHb(MsgData msgData, boolean isAuto) throws SecurityException {
                 String troopName = FieldUtils.create(TroopTool.getTroopInfo(msgData.peerUin)).withName("troopNameFromNT").getValue().toString();
 
                 if (channel == 1) {
-                    channelName = "拼手气或普通红�?;
+                    channelName = "拼手气或普通红包";
                 } else if (channel == 32) {
                     channelName = "口令红包";
                 } else if (channel == 65536) {
@@ -322,17 +319,17 @@ private void grabHb(MsgData msgData, boolean isAuto) throws SecurityException {
                 String timeStr = LocalDateTime.ofInstant(Instant.ofEpochMilli(msgData.time * 1000), ZoneId.systemDefault())
                         .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-                sb.append("[QSad]未领取红�?\n[红包类型:");
+                sb.append("[QSad]未领取红包\n[红包类型:");
                 sb.append(channelName);
                 sb.append("]\n[群聊:");
                 sb.append(troopName);
                 sb.append("(");
                 sb.append(msgData.peerUin);
-                sb.append(")]\n[发送�?");
+                sb.append(")]\n[发送者:");
                 sb.append(TroopTool.getMemberName(msgData.peerUin, msgData.userUin));
                 sb.append("(");
                 sb.append(msgData.userUin);
-                sb.append(")]\n[发送时�?");
+                sb.append(")]\n[发送时间:");
                 sb.append(timeStr);
                 sb.append("]\n[原因:");
 
@@ -340,16 +337,16 @@ private void grabHb(MsgData msgData, boolean isAuto) throws SecurityException {
                     String title = reason.split("->")[0];
                     String keywords = reason.split("->")[1];
                     sb.append(title);
-                    sb.append(" 包含关键�?");
+                    sb.append(" 包含关键字");
                     sb.append(keywords);
                 } else if (reasonType == 1) {
                     String actualAvg = reason.split("->")[0];
                     String expectedAvg = reason.split("->")[1];
                     sb.append("实际平均金额");
                     sb.append(actualAvg);
-                    sb.append("分低于预期平均金�?);
+                    sb.append("分低于预期平均金额");
                     sb.append(expectedAvg);
-                    sb.append("�?);
+                    sb.append("分");
                 }
                 sb.append("]");
 
@@ -358,4 +355,3 @@ private void grabHb(MsgData msgData, boolean isAuto) throws SecurityException {
         });
     }
 }
-
